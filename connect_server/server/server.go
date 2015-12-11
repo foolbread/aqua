@@ -36,13 +36,13 @@ var g_innerserver *innerConnectServer
 
 type outerConnSet struct {
 	lo   *sync.RWMutex
-	mcon map[string]*outerConn
+	mcon map[string]*Client
 }
 
 func newOuterConnSet() *outerConnSet {
 	r := new(outerConnSet)
 	r.lo = new(sync.RWMutex)
-	r.mcon = make(map[string]*outerConn)
+	r.mcon = make(map[string]*Client)
 
 	return r
 }
@@ -71,14 +71,14 @@ func (s *outerConnectServer) outerServer(a string) {
 			golog.Critical(err)
 		}
 
-		go s.handlerOuterCon(c)
+		go s.handlerClientCon(c)
 	}
 }
 
-func (s *outerConnectServer) handlerOuterCon(c net.Conn) {
+func (s *outerConnectServer) handlerClientCon(c net.Conn) {
 	defer c.Close()
 	//handler login
-	con, err := s.handlerLogin(c)
+	con, err := s.handlerClientLogin(c)
 	if err != nil {
 		golog.Error(err)
 		return
@@ -87,9 +87,9 @@ func (s *outerConnectServer) handlerOuterCon(c net.Conn) {
 	con.handlerService()
 }
 
-func (s *outerConnectServer) handlerLogin(c net.Conn) (*outerConn, error) {
+func (s *outerConnectServer) handlerClientLogin(c net.Conn) (*Client, error) {
 	var buf [1024]byte
-	var ret *outerConn = nil
+	var ret *Client = nil
 	l, err := anet.RecvPacket(c, buf[:])
 	if err != nil {
 		return nil, err
@@ -114,7 +114,7 @@ func (s *outerConnectServer) handlerLogin(c net.Conn) (*outerConn, error) {
 	set.lo.Lock()
 	_, ok = set.mcon[key]
 	if !ok {
-		ret = &outerConn{req.Cid, key, req.Token, c}
+		ret = &Client{req.Cid, key, req.Token, c}
 		set.mcon[key] = ret
 	}
 	set.lo.Unlock()
@@ -177,11 +177,16 @@ func (s *innerConnectServer) startListen() {
 	go s.innerServer(iaddr)
 }
 
-func (s *innerConnectServer) pushMsg(m *innerMsg) {
+func (s *innerConnectServer) getServer(t int, key []byte) *innerConn {
+	var ret *innerConn
 	s.lo.RLock()
-	if _, ok := s.server[m.t]; ok {
+	v, ok := s.server[t]
+	if ok {
+		ret = v[int(key[0])%len(v)]
 	}
 	s.lo.RUnlock()
+
+	return ret
 }
 
 func (s *innerConnectServer) innerServer(a string) {
@@ -203,5 +208,9 @@ func (s *innerConnectServer) innerServer(a string) {
 }
 
 func (s *innerConnectServer) handlerInnerCon(c net.Conn) {
+
+}
+
+func (s *innerConnectServer) handlerInnerLogin(c net.Conn) {
 
 }
