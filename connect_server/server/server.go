@@ -146,26 +146,14 @@ func (s *outerConnectServer) exitConn(key []byte, keystr string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
-
-type innerLogicServer struct {
-	con net.Conn
-}
-
-type innerMsg struct {
-	t int
-	d []byte
-}
-
 type innerConnectServer struct {
-	server map[int][]*innerLogicServer
+	server map[int][]*logicServer
 	lo     *sync.RWMutex
-	ch     chan *innerMsg
 }
 
 func newInnerConnectServer() *innerConnectServer {
 	r := new(innerConnectServer)
-	r.ch = make(chan *innerMsg, 1024)
-	r.server = make(map[int][]*innerLogicServer)
+	r.server = make(map[int][]*logicServer)
 	r.lo = new(sync.RWMutex)
 
 	return r
@@ -177,8 +165,8 @@ func (s *innerConnectServer) startListen() {
 	go s.innerServer(iaddr)
 }
 
-func (s *innerConnectServer) getServer(t int, key []byte) *innerConn {
-	var ret *innerConn
+func (s *innerConnectServer) getServer(t int, key []byte) *logicServer {
+	var ret *logicServer
 	s.lo.RLock()
 	v, ok := s.server[t]
 	if ok {
@@ -203,14 +191,14 @@ func (s *innerConnectServer) innerServer(a string) {
 			golog.Critical(err)
 		}
 
-		go s.handlerInnerCon(c)
+		go s.handlerLogicCon(c)
 	}
 }
 
-func (s *innerConnectServer) handlerInnerCon(c net.Conn) {
+func (s *innerConnectServer) handlerLogicCon(c net.Conn) {
 
 }
 
-func (s *innerConnectServer) handlerInnerLogin(c net.Conn) {
+func (s *innerConnectServer) handlerLogicLogin(c net.Conn) {
 
 }

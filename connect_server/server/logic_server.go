@@ -7,7 +7,7 @@ import (
 	"net"
 )
 
-type innerConn struct {
+type logicServer struct {
 	Service_type int
 	Con          net.Conn
 }
