@@ -122,20 +122,20 @@ func (s *outerConnectServer) handlerClientLogin(c net.Conn) (*Client, error) {
 	//construct login response
 	d, err := aproto.MarshalLoginRes(req.Token, LOGIN_SUCCESS, req.Cid)
 	if err != nil {
-		s.exitConn(req.Token, key)
+		s.exitClient(req.Token, key)
 		return nil, err
 	}
 
 	err = anet.SendPacket(c, d)
 	if err != nil {
-		s.exitConn(req.Token, key)
+		s.exitClient(req.Token, key)
 		return nil, err
 	}
 
 	return ret, nil
 }
 
-func (s *outerConnectServer) exitConn(key []byte, keystr string) {
+func (s *outerConnectServer) exitClient(key []byte, keystr string) {
 	set := s.cons[key[0]%ARRARY_LEN]
 
 	set.lo.Lock()
