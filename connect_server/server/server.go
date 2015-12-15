@@ -78,13 +78,13 @@ func (s *outerConnectServer) outerServer(a string) {
 func (s *outerConnectServer) handlerClientCon(c net.Conn) {
 	defer c.Close()
 	//handler login
-	con, err := s.handlerClientLogin(c)
+	cli, err := s.handlerClientLogin(c)
 	if err != nil {
 		golog.Error(err)
 		return
 	}
 
-	con.handlerService()
+	cli.run()
 }
 
 func (s *outerConnectServer) handlerClientLogin(c net.Conn) (*Client, error) {
@@ -114,7 +114,7 @@ func (s *outerConnectServer) handlerClientLogin(c net.Conn) (*Client, error) {
 	set.lo.Lock()
 	_, ok = set.mcon[key]
 	if !ok {
-		ret = &Client{req.Cid, key, req.Token, c}
+		ret = newClient(req.Cid, req.Token, c)
 		set.mcon[key] = ret
 	}
 	set.lo.Unlock()
@@ -196,9 +196,33 @@ func (s *innerConnectServer) innerServer(a string) {
 }
 
 func (s *innerConnectServer) handlerLogicCon(c net.Conn) {
+	ser, err := s.handlerLogicLogin(c)
+	if err != nil {
+		golog.Error(err)
+		return
+	}
 
+	ser.run()
 }
 
-func (s *innerConnectServer) handlerLogicLogin(c net.Conn) {
+func (s *innerConnectServer) handlerLogicLogin(c net.Conn) (*logicServer, error) {
+	var buf [1024]byte
+	n, err := anet.RecvPacket(c, buf[:])
+	if err != nil {
+		return nil, err
+	}
 
+	req, err := aproto.UnmarshalSvrRegisterReq(buf[:n])
+	if err != nil {
+		return nil, err
+	}
+
+	l := newLogicServer(int(req.ServiceType), c)
+
+	s.lo.Lock()
+	val := s.server[int(req.ServiceType)]
+	val = append(val, l)
+	s.lo.Unlock()
+
+	return l, nil
 }

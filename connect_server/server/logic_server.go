@@ -11,3 +11,15 @@ type logicServer struct {
 	Service_type int
 	Con          net.Conn
 }
+
+func newLogicServer(t int, c net.Conn) *logicServer {
+	r := new(logicServer)
+	r.Service_type = t
+	r.Con = c
+
+	return r
+}
+
+func (s *logicServer) run() {
+
+}

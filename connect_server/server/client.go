@@ -25,6 +25,6 @@ func newClient(cid string, token []byte, con net.Conn) *Client {
 	return r
 }
 
-func (s *Client) handlerService() {
+func (s *Client) run() {
 
 }
