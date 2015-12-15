@@ -85,6 +85,9 @@ func (s *outerConnectServer) handlerClientCon(c net.Conn) {
 	}
 
 	cli.run()
+
+	//exit client
+	s.exitClient(cli.Token, cli.TokenStr)
 }
 
 func (s *outerConnectServer) handlerClientLogin(c net.Conn) (*Client, error) {
@@ -203,6 +206,8 @@ func (s *innerConnectServer) handlerLogicCon(c net.Conn) {
 	}
 
 	ser.run()
+
+	s.exitServer(ser.Service_type, ser.Addr)
 }
 
 func (s *innerConnectServer) handlerLogicLogin(c net.Conn) (*logicServer, error) {
@@ -225,4 +230,29 @@ func (s *innerConnectServer) handlerLogicLogin(c net.Conn) (*logicServer, error)
 	s.lo.Unlock()
 
 	return l, nil
+}
+
+func (s *innerConnectServer) exitServer(t int, a string) {
+	s.lo.Lock()
+	ser, ok := s.server[t]
+	if ok {
+		for k, v := range ser {
+			if a == v.Addr {
+				if k == 0 {
+					ser = ser[1:]
+				} else if k == len(ser)-1 {
+					ser = ser[:len(ser)-1]
+				} else {
+					t := ser[k+1:]
+					ser = ser[:k]
+					ser = append(ser, t...)
+				}
+
+				s.server[t] = ser
+				golog.Info("service type:", t, "service addr:", a, "exit...")
+				break
+			}
+		}
+	}
+	s.lo.Unlock()
 }

@@ -10,12 +10,14 @@ import (
 type logicServer struct {
 	Service_type int
 	Con          net.Conn
+	Addr         string
 }
 
 func newLogicServer(t int, c net.Conn) *logicServer {
 	r := new(logicServer)
 	r.Service_type = t
 	r.Con = c
+	r.Addr = c.RemoteAddr().String()
 
 	return r
 }
