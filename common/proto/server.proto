@@ -22,6 +22,15 @@ message RedirectResponse{
 	bytes token = 3;//connect to connect server
 } 
 
+message ServerRegisterReq{
+	uint32 service_type = 1;
+}
+
+message ServerRegisterRes{
+	uint32 status = 1;
+}
+
+
 message ServiceRequest{
 	string token = 1;
 	int32 service_type = 2;

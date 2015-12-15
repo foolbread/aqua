@@ -5,7 +5,6 @@ package proto
 
 import (
 	"encoding/binary"
-	gproto "github.com/golang/protobuf/proto"
 	"time"
 )
 
@@ -17,7 +16,7 @@ const SERVICERES_CMD = 0x06
 
 func UnmarshalLoginReq(d []byte) (*LoginRequest, error) {
 	var req LoginRequest
-	err := gproto.Unmarshal(d, &req)
+	err := req.Unmarshal(d)
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +32,7 @@ func MarshalLoginRes(token []byte, status int32, cid string) ([]byte, error) {
 	res.Status = status
 	res.ServerTime = time.Now().Unix()
 
-	d, err := gproto.Marshal(&res)
+	d, err := res.Marshal()
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +50,8 @@ func MarshalRedirect(token []byte, addr string) ([]byte, error) {
 	res.Status = 0
 	res.Token = token
 	res.Addrs = addr
-	d, err := gproto.Marshal(&res)
+
+	d, err := res.Marshal()
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +65,8 @@ func MarshalRedirect(token []byte, addr string) ([]byte, error) {
 
 func UnmarshalServiceReq(d []byte) (*ServiceRequest, error) {
 	var req ServiceRequest
-	err := gproto.Unmarshal(d, &req)
+
+	err := req.Unmarshal(d)
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +82,7 @@ func MarshalServiceRes(t int32, sn string, s int32, data []byte) ([]byte, error)
 	res.Status = s
 	res.Payload = data
 
-	d, err := gproto.Marshal(&res)
+	d, err := res.Marshal()
 	if err != nil {
 		return nil, err
 	}
@@ -91,4 +92,18 @@ func MarshalServiceRes(t int32, sn string, s int32, data []byte) ([]byte, error)
 
 	buf = append(buf, d...)
 	return buf, nil
+}
+
+func UnmarshalSvrRegisterReq(d []byte) (*ServerRegisterReq, error) {
+	var req ServerRegisterReq
+	err := req.Unmarshal(d)
+	if err != nil {
+		return nil, err
+	}
+
+	return &req, nil
+}
+
+func MarshalSvrRegisterRes() ([]byte, error) {
+	return nil, nil
 }

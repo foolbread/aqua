@@ -13,10 +13,10 @@
 		LoginRequest
 		LoginResponse
 		RedirectResponse
-		ServiceRequest
-		ServiceResponse
 		ServerRegisterReq
 		ServerRegisterRes
+		ServiceRequest
+		ServiceResponse
 		PeerMessage
 		SendPeerMessageReq
 		SendPeerMessageRes
@@ -68,6 +68,22 @@ func (m *RedirectResponse) Reset()         { *m = RedirectResponse{} }
 func (m *RedirectResponse) String() string { return proto1.CompactTextString(m) }
 func (*RedirectResponse) ProtoMessage()    {}
 
+type ServerRegisterReq struct {
+	ServiceType uint32 `protobuf:"varint,1,opt,name=service_type,proto3" json:"service_type,omitempty"`
+}
+
+func (m *ServerRegisterReq) Reset()         { *m = ServerRegisterReq{} }
+func (m *ServerRegisterReq) String() string { return proto1.CompactTextString(m) }
+func (*ServerRegisterReq) ProtoMessage()    {}
+
+type ServerRegisterRes struct {
+	Status uint32 `protobuf:"varint,1,opt,name=status,proto3" json:"status,omitempty"`
+}
+
+func (m *ServerRegisterRes) Reset()         { *m = ServerRegisterRes{} }
+func (m *ServerRegisterRes) String() string { return proto1.CompactTextString(m) }
+func (*ServerRegisterRes) ProtoMessage()    {}
+
 type ServiceRequest struct {
 	Token       string `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
 	ServiceType int32  `protobuf:"varint,2,opt,name=service_type,proto3" json:"service_type,omitempty"`
@@ -95,6 +111,8 @@ func init() {
 	proto1.RegisterType((*LoginRequest)(nil), "proto.LoginRequest")
 	proto1.RegisterType((*LoginResponse)(nil), "proto.LoginResponse")
 	proto1.RegisterType((*RedirectResponse)(nil), "proto.RedirectResponse")
+	proto1.RegisterType((*ServerRegisterReq)(nil), "proto.ServerRegisterReq")
+	proto1.RegisterType((*ServerRegisterRes)(nil), "proto.ServerRegisterRes")
 	proto1.RegisterType((*ServiceRequest)(nil), "proto.ServiceRequest")
 	proto1.RegisterType((*ServiceResponse)(nil), "proto.ServiceResponse")
 }
@@ -216,6 +234,52 @@ func (m *RedirectResponse) MarshalTo(data []byte) (int, error) {
 			i = encodeVarintServer(data, i, uint64(len(m.Token)))
 			i += copy(data[i:], m.Token)
 		}
+	}
+	return i, nil
+}
+
+func (m *ServerRegisterReq) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *ServerRegisterReq) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.ServiceType != 0 {
+		data[i] = 0x8
+		i++
+		i = encodeVarintServer(data, i, uint64(m.ServiceType))
+	}
+	return i, nil
+}
+
+func (m *ServerRegisterRes) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *ServerRegisterRes) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Status != 0 {
+		data[i] = 0x8
+		i++
+		i = encodeVarintServer(data, i, uint64(m.Status))
 	}
 	return i, nil
 }
@@ -398,6 +462,24 @@ func (m *RedirectResponse) Size() (n int) {
 		if l > 0 {
 			n += 1 + l + sovServer(uint64(l))
 		}
+	}
+	return n
+}
+
+func (m *ServerRegisterReq) Size() (n int) {
+	var l int
+	_ = l
+	if m.ServiceType != 0 {
+		n += 1 + sovServer(uint64(m.ServiceType))
+	}
+	return n
+}
+
+func (m *ServerRegisterRes) Size() (n int) {
+	var l int
+	_ = l
+	if m.Status != 0 {
+		n += 1 + sovServer(uint64(m.Status))
 	}
 	return n
 }
@@ -869,6 +951,144 @@ func (m *RedirectResponse) Unmarshal(data []byte) error {
 			}
 			m.Token = append([]byte{}, data[iNdEx:postIndex]...)
 			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipServer(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthServer
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ServerRegisterReq) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowServer
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ServerRegisterReq: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ServerRegisterReq: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ServiceType", wireType)
+			}
+			m.ServiceType = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowServer
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.ServiceType |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipServer(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthServer
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ServerRegisterRes) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowServer
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ServerRegisterRes: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ServerRegisterRes: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
+			}
+			m.Status = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowServer
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.Status |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipServer(data[iNdEx:])
