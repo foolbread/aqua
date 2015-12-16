@@ -8,13 +8,21 @@ import (
 	"time"
 )
 
-const LOGINREQ_CMD = 0x01
-const LOGINRES_CMD = 0x02
-const REDIRECT_CMD = 0x04
-const SERVICEREQ_CMD = 0x05
-const SERVICERES_CMD = 0x06
-const SVRREGISTREQ_CMD = 0x07
-const SVRREGISTRES_CMD = 0x08
+//status
+const (
+	STATUS_OK = 0
+)
+
+//cmd
+const (
+	LOGINREQ_CMD       = 0x01
+	LOGINRES_CMD       = 0x02
+	REDIRECT_CMD       = 0x04
+	SERVICEREQ_CMD     = 0x05
+	SERVICERES_CMD     = 0x06
+	SVRREGISTERREQ_CMD = 0x07
+	SVRREGISTERRES_CMD = 0x08
+)
 
 func UnmarshalLoginReq(d []byte) (*LoginRequest, error) {
 	var req LoginRequest
@@ -117,7 +125,7 @@ func MarshalSvrRegisterRes(s int32) ([]byte, error) {
 	}
 
 	binary.BigEndian.PutUint32(buf[4:], uint32(len(d)+HEAD_LEN))
-	binary.BigEndian.PutUint32(buf[8:], SERVICERES_CMD)
+	binary.BigEndian.PutUint32(buf[8:], SVRREGISTERRES_CMD)
 
 	buf = append(buf, d...)
 	return buf, nil

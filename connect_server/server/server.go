@@ -15,9 +15,6 @@ import (
 )
 
 const ARRARY_LEN = 255
-const (
-	LOGIN_SUCCESS = 0
-)
 
 func InitServer() {
 	golog.Info("initing connect server......")
@@ -123,7 +120,7 @@ func (s *outerConnectServer) handlerClientLogin(c net.Conn) (*Client, error) {
 	set.lo.Unlock()
 
 	//construct login response
-	d, err := aproto.MarshalLoginRes(req.Token, LOGIN_SUCCESS, req.Cid)
+	d, err := aproto.MarshalLoginRes(req.Token, aproto.STATUS_OK, req.Cid)
 	if err != nil {
 		s.exitClient(req.Token, key)
 		return nil, err
@@ -212,6 +209,7 @@ func (s *innerConnectServer) handlerLogicCon(c net.Conn) {
 
 func (s *innerConnectServer) handlerLogicLogin(c net.Conn) (*logicServer, error) {
 	var buf [1024]byte
+	//request
 	n, err := anet.RecvPacket(c, buf[:])
 	if err != nil {
 		return nil, err
@@ -222,6 +220,18 @@ func (s *innerConnectServer) handlerLogicLogin(c net.Conn) (*logicServer, error)
 		return nil, err
 	}
 
+	//response
+	da, err := aproto.MarshalSvrRegisterRes(aproto.STATUS_OK)
+	if err != nil {
+		return nil, err
+	}
+
+	err = anet.SendPacket(c, da)
+	if err != nil {
+		return nil, err
+	}
+
+	//register
 	l := newLogicServer(int(req.ServiceType), c)
 
 	s.lo.Lock()
