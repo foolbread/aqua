@@ -4,6 +4,9 @@
 package server
 
 import (
+	anet "aqua/common/net"
+	aproto "aqua/common/proto"
+	"fbcommon/golog"
 	"fmt"
 	"net"
 )
@@ -26,5 +29,25 @@ func newClient(cid string, token []byte, con net.Conn) *Client {
 }
 
 func (s *Client) run() {
+	var buf [4096]byte
+	var req *aproto.ServiceRequest
+	var ser *logicServer
+	for {
+		n, err := anet.RecvPacket(s.Con, buf[:])
+		if err != nil {
+			golog.Error(err)
+			return
+		}
 
+		req, err = aproto.UnmarshalServiceReq(buf[:n])
+		if err != nil {
+			golog.Error(err)
+			return
+		}
+
+		ser = g_innerserver.getServer(int(req.ServiceType), s.Token)
+		if ser == nil {
+			return
+		}
+	}
 }

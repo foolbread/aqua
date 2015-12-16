@@ -77,7 +77,7 @@ func (m *ServerRegisterReq) String() string { return proto1.CompactTextString(m)
 func (*ServerRegisterReq) ProtoMessage()    {}
 
 type ServerRegisterRes struct {
-	Status uint32 `protobuf:"varint,1,opt,name=status,proto3" json:"status,omitempty"`
+	Status int32 `protobuf:"varint,1,opt,name=status,proto3" json:"status,omitempty"`
 }
 
 func (m *ServerRegisterRes) Reset()         { *m = ServerRegisterRes{} }
@@ -1084,7 +1084,7 @@ func (m *ServerRegisterRes) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				m.Status |= (uint32(b) & 0x7F) << shift
+				m.Status |= (int32(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}

@@ -13,6 +13,8 @@ const LOGINRES_CMD = 0x02
 const REDIRECT_CMD = 0x04
 const SERVICEREQ_CMD = 0x05
 const SERVICERES_CMD = 0x06
+const SVRREGISTREQ_CMD = 0x07
+const SVRREGISTRES_CMD = 0x08
 
 func UnmarshalLoginReq(d []byte) (*LoginRequest, error) {
 	var req LoginRequest
@@ -104,6 +106,19 @@ func UnmarshalSvrRegisterReq(d []byte) (*ServerRegisterReq, error) {
 	return &req, nil
 }
 
-func MarshalSvrRegisterRes() ([]byte, error) {
-	return nil, nil
+func MarshalSvrRegisterRes(s int32) ([]byte, error) {
+	var buf []byte = make([]byte, HEAD_LEN, 1024)
+	var res ServerRegisterRes
+	res.Status = s
+
+	d, err := res.Marshal()
+	if err != nil {
+		return nil, err
+	}
+
+	binary.BigEndian.PutUint32(buf[4:], uint32(len(d)+HEAD_LEN))
+	binary.BigEndian.PutUint32(buf[8:], SERVICERES_CMD)
+
+	buf = append(buf, d...)
+	return buf, nil
 }
