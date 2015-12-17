@@ -38,10 +38,11 @@ func (s *Client) run() {
 			return
 		}
 
-		ser = g_innerserver.getServer(int(req.ServiceType), s.Token)
+		ser = g_logicmanager.getServer(int(req.ServiceType), s.Token)
 		if ser == nil {
 			return
 		}
+
 	}
 }
 
