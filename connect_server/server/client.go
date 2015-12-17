@@ -30,16 +30,9 @@ func newClient(cid string, token []byte, con net.Conn) *Client {
 
 func (s *Client) run() {
 	var buf [4096]byte
-	var req *aproto.ServiceRequest
 	var ser *logicServer
 	for {
-		n, err := anet.RecvPacket(s.Con, buf[:])
-		if err != nil {
-			golog.Error(err)
-			return
-		}
-
-		req, err = aproto.UnmarshalServiceReq(buf[:n])
+		req, err := s.readRequest(buf[:])
 		if err != nil {
 			golog.Error(err)
 			return
@@ -50,4 +43,23 @@ func (s *Client) run() {
 			return
 		}
 	}
+}
+
+func (s *Client) readRequest(buf []byte) (*aproto.ServiceRequest, error) {
+	n, err := anet.RecvPacket(s.Con, buf)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := aproto.UnmarshalServiceReq(buf[:n])
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+func (s *Client) sendResponse(d []byte) error {
+
+	return anet.SendPacket(s.Con, d)
 }

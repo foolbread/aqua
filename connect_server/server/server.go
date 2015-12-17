@@ -112,10 +112,14 @@ func (s *outerConnectServer) handlerClientLogin(c net.Conn) (*Client, error) {
 	set.lo.RUnlock()
 
 	set.lo.Lock()
+	//double check
 	_, ok = set.mcon[key]
 	if !ok {
 		ret = newClient(req.Cid, req.Token, c)
 		set.mcon[key] = ret
+	} else {
+		set.lo.Unlock()
+		return nil, aeer.ErrConnExsit
 	}
 	set.lo.Unlock()
 
