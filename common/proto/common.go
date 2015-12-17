@@ -15,6 +15,7 @@ const (
 
 //cmd
 const (
+	KEEPALIVE_CMD      = 0x00
 	LOGINREQ_CMD       = 0x01
 	LOGINRES_CMD       = 0x02
 	REDIRECT_CMD       = 0x04
@@ -82,6 +83,17 @@ func UnmarshalServiceReq(d []byte) (*ServiceRequest, error) {
 	}
 
 	return &req, nil
+}
+
+func UnmarshalServiceRes(d []byte) (*ServiceResponse, error) {
+	var res ServiceResponse
+
+	err := res.Unmarshal(d)
+	if err != nil {
+		return nil, err
+	}
+
+	return &res, nil
 }
 
 func MarshalServiceRes(t int32, sn string, s int32, data []byte) ([]byte, error) {

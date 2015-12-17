@@ -59,7 +59,7 @@ func (s *connectServer) handlerClientCon(c net.Conn) {
 func (s *connectServer) handlerClientLogin(c net.Conn) (*Client, error) {
 	var buf [1024]byte
 	var ret *Client = nil
-	l, err := anet.RecvPacket(c, buf[:])
+	l, err := anet.RecvPacketEx(c, buf[:], default_timeout)
 	if err != nil {
 		return nil, err
 	}

@@ -5,9 +5,12 @@ package server
 
 import (
 	"fbcommon/golog"
+	"time"
 )
 
 const ARRARY_LEN = 255
+
+var default_timeout time.Duration = 2 * time.Minute
 
 func InitServer() {
 	golog.Info("initing connect server......")

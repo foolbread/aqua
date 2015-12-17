@@ -76,7 +76,7 @@ func (s *logicManager) handlerLogicCon(c net.Conn) {
 func (s *logicManager) handlerLogicLogin(c net.Conn) (*logicServer, error) {
 	var buf [1024]byte
 	//request
-	n, err := anet.RecvPacket(c, buf[:])
+	n, err := anet.RecvPacketEx(c, buf[:], default_timeout)
 	if err != nil {
 		return nil, err
 	}

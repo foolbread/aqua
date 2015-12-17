@@ -47,12 +47,12 @@ func (s *Client) run() {
 }
 
 func (s *Client) readRequest(buf []byte) (*aproto.ServiceRequest, error) {
-	n, err := anet.RecvPacket(s.Con, buf)
+	n, err := anet.RecvPacketEx(s.Con, buf, default_timeout)
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := aproto.UnmarshalServiceReq(buf[:n])
+	req, err := aproto.UnmarshalServiceReq(buf[aproto.HEAD_LEN:n])
 	if err != nil {
 		return nil, err
 	}

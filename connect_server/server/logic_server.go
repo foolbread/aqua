@@ -4,6 +4,8 @@
 package server
 
 import (
+	anet "aqua/common/net"
+	aproto "aqua/common/proto"
 	"net"
 )
 
@@ -23,5 +25,26 @@ func newLogicServer(t int, c net.Conn) *logicServer {
 }
 
 func (s *logicServer) run() {
+	var buf [4096]byte
+	for {
+		s.readResponse(buf[:])
+	}
+}
 
+func (s *logicServer) readResponse(buf []byte) (*aproto.ServiceResponse, uint32, error) {
+	n, err := anet.RecvPacket(s.Con, buf)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	res, err := aproto.UnmarshalServiceRes(buf[aproto.HEAD_LEN:n])
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return res, n, nil
+}
+
+func (s *logicServer) sendRequest(d []byte) error {
+	return anet.SendPacket(s.Con, d)
 }
