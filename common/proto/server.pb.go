@@ -85,7 +85,7 @@ func (m *ServerRegisterRes) String() string { return proto1.CompactTextString(m)
 func (*ServerRegisterRes) ProtoMessage()    {}
 
 type ServiceRequest struct {
-	Token       string `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	Token       []byte `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
 	ServiceType int32  `protobuf:"varint,2,opt,name=service_type,proto3" json:"service_type,omitempty"`
 	Sn          string `protobuf:"bytes,3,opt,name=sn,proto3" json:"sn,omitempty"`
 	Payload     []byte `protobuf:"bytes,4,opt,name=payload,proto3" json:"payload,omitempty"`
@@ -96,7 +96,7 @@ func (m *ServiceRequest) String() string { return proto1.CompactTextString(m) }
 func (*ServiceRequest) ProtoMessage()    {}
 
 type ServiceResponse struct {
-	Token       string `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	Token       []byte `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
 	ServiceType int32  `protobuf:"varint,2,opt,name=service_type,proto3" json:"service_type,omitempty"`
 	Sn          string `protobuf:"bytes,3,opt,name=sn,proto3" json:"sn,omitempty"`
 	Status      int32  `protobuf:"varint,4,opt,name=status,proto3" json:"status,omitempty"`
@@ -299,11 +299,13 @@ func (m *ServiceRequest) MarshalTo(data []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Token) > 0 {
-		data[i] = 0xa
-		i++
-		i = encodeVarintServer(data, i, uint64(len(m.Token)))
-		i += copy(data[i:], m.Token)
+	if m.Token != nil {
+		if len(m.Token) > 0 {
+			data[i] = 0xa
+			i++
+			i = encodeVarintServer(data, i, uint64(len(m.Token)))
+			i += copy(data[i:], m.Token)
+		}
 	}
 	if m.ServiceType != 0 {
 		data[i] = 0x10
@@ -342,11 +344,13 @@ func (m *ServiceResponse) MarshalTo(data []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Token) > 0 {
-		data[i] = 0xa
-		i++
-		i = encodeVarintServer(data, i, uint64(len(m.Token)))
-		i += copy(data[i:], m.Token)
+	if m.Token != nil {
+		if len(m.Token) > 0 {
+			data[i] = 0xa
+			i++
+			i = encodeVarintServer(data, i, uint64(len(m.Token)))
+			i += copy(data[i:], m.Token)
+		}
 	}
 	if m.ServiceType != 0 {
 		data[i] = 0x10
@@ -487,9 +491,11 @@ func (m *ServerRegisterRes) Size() (n int) {
 func (m *ServiceRequest) Size() (n int) {
 	var l int
 	_ = l
-	l = len(m.Token)
-	if l > 0 {
-		n += 1 + l + sovServer(uint64(l))
+	if m.Token != nil {
+		l = len(m.Token)
+		if l > 0 {
+			n += 1 + l + sovServer(uint64(l))
+		}
 	}
 	if m.ServiceType != 0 {
 		n += 1 + sovServer(uint64(m.ServiceType))
@@ -510,9 +516,11 @@ func (m *ServiceRequest) Size() (n int) {
 func (m *ServiceResponse) Size() (n int) {
 	var l int
 	_ = l
-	l = len(m.Token)
-	if l > 0 {
-		n += 1 + l + sovServer(uint64(l))
+	if m.Token != nil {
+		l = len(m.Token)
+		if l > 0 {
+			n += 1 + l + sovServer(uint64(l))
+		}
 	}
 	if m.ServiceType != 0 {
 		n += 1 + sovServer(uint64(m.ServiceType))
@@ -1143,7 +1151,7 @@ func (m *ServiceRequest) Unmarshal(data []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Token", wireType)
 			}
-			var stringLen uint64
+			var byteLen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowServer
@@ -1153,20 +1161,19 @@ func (m *ServiceRequest) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
+				byteLen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if byteLen < 0 {
 				return ErrInvalidLengthServer
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + byteLen
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Token = string(data[iNdEx:postIndex])
+			m.Token = append([]byte{}, data[iNdEx:postIndex]...)
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
@@ -1298,7 +1305,7 @@ func (m *ServiceResponse) Unmarshal(data []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Token", wireType)
 			}
-			var stringLen uint64
+			var byteLen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowServer
@@ -1308,20 +1315,19 @@ func (m *ServiceResponse) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
+				byteLen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if byteLen < 0 {
 				return ErrInvalidLengthServer
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + byteLen
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Token = string(data[iNdEx:postIndex])
+			m.Token = append([]byte{}, data[iNdEx:postIndex]...)
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {

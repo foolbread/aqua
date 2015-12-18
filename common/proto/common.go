@@ -96,9 +96,10 @@ func UnmarshalServiceRes(d []byte) (*ServiceResponse, error) {
 	return &res, nil
 }
 
-func MarshalServiceRes(t int32, sn string, s int32, data []byte) ([]byte, error) {
+func MarshalServiceRes(to []byte, t int32, sn string, s int32, data []byte) ([]byte, error) {
 	var buf []byte = make([]byte, HEAD_LEN, 1024)
 	var res ServiceResponse
+	res.Token = to
 	res.ServiceType = t
 	res.Sn = sn
 	res.Status = s

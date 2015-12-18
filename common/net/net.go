@@ -11,43 +11,43 @@ import (
 	"time"
 )
 
-func RecvPacket(c net.Conn, d []byte) (uint32, error) {
+func RecvPacket(c net.Conn, d []byte) (uint32, uint32, error) {
 	err := fbnet.ReadByCnt(c, d[:aproto.HEAD_LEN])
 
 	if err != nil {
-		return 0, err
+		return 0, 0, err
 	}
 
 	h := aproto.UnmarshalHead(d[:aproto.HEAD_LEN])
 	if h.Length > uint32(len(d[aproto.HEAD_LEN:])) {
-		return 0, aerror.ErrPacketLen
+		return 0, 0, aerror.ErrPacketLen
 	}
 
 	err = fbnet.ReadByCnt(c, d[aproto.HEAD_LEN:h.Length-aproto.HEAD_LEN])
 	if err != nil {
-		return 0, err
+		return 0, 0, err
 	}
 
-	return h.Length, nil
+	return h.Length, h.Cmd, nil
 }
 
-func RecvPacketEx(c net.Conn, d []byte, timeout time.Duration) (uint32, error) {
+func RecvPacketEx(c net.Conn, d []byte, timeout time.Duration) (uint32, uint32, error) {
 	err := fbnet.ReadByTimeout(c, d[:aproto.HEAD_LEN], timeout)
 	if err != nil {
-		return 0, err
+		return 0, 0, err
 	}
 
 	h := aproto.UnmarshalHead(d[:aproto.HEAD_LEN])
 	if h.Length > uint32(len(d[aproto.HEAD_LEN:])) {
-		return 0, aerror.ErrPacketLen
+		return 0, 0, aerror.ErrPacketLen
 	}
 
 	err = fbnet.ReadByTimeout(c, d[aproto.HEAD_LEN:h.Length-aproto.HEAD_LEN], timeout)
 	if err != nil {
-		return 0, err
+		return 0, 0, err
 	}
 
-	return h.Length, nil
+	return h.Length, h.Cmd, nil
 }
 
 func SendPacket(c net.Conn, d []byte) error {

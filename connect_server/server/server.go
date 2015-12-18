@@ -4,6 +4,7 @@
 package server
 
 import (
+	aproto "aqua/common/proto"
 	"fbcommon/golog"
 	"time"
 )
@@ -22,6 +23,8 @@ func InitServer() {
 
 	g_logicmanager = new(logicManager)
 	g_logicmanager.startListen()
+
+	keepalive.cmd = aproto.KEEPALIVE_CMD
 }
 
 var g_conserver *connectServer

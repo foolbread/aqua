@@ -32,14 +32,14 @@ message ServerRegisterRes{
 
 
 message ServiceRequest{
-	string token = 1;
+	bytes token = 1;
 	int32 service_type = 2;
 	string sn = 3;//each req has an unique sn
 	bytes payload = 4;// payload
 }
 
 message ServiceResponse{
-	string token = 1;
+	bytes token = 1;
 	int32 service_type = 2;
 	string sn = 3;//each req has an unique sn
 	int32 status = 4;// 0 success
