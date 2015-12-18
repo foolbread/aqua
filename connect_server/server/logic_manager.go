@@ -108,6 +108,10 @@ func (s *logicManager) handlerLogicLogin(c net.Conn) (*logicServer, error) {
 	return l, nil
 }
 
+func (s *logicManager) handlerLogicRes(pa *logicPacket) {
+	g_conserver.handlerClientRes(pa)
+}
+
 func (s *logicManager) exitServer(t int, a string) {
 	s.lo.Lock()
 	ser, ok := s.mserver[t]

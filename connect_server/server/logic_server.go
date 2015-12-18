@@ -49,6 +49,7 @@ func (s *logicServer) run() {
 
 		switch pa.cmd {
 		case aproto.SERVICERES_CMD:
+			g_logicmanager.handlerLogicRes(pa)
 		case aproto.KEEPALIVE_CMD:
 			s.alive.Set(true)
 		}

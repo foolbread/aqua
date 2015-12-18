@@ -17,7 +17,7 @@ func InitServer() {
 	golog.Info("initing connect server......")
 	g_conserver = new(connectServer)
 	for i := 0; i < ARRARY_LEN; i++ {
-		g_conserver.cons[i] = newClientManager()
+		g_conserver.clients[i] = newClientManager()
 	}
 	g_conserver.startListen()
 

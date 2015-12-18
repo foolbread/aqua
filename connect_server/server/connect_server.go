@@ -16,7 +16,7 @@ import (
 const keyformat string = "%02X"
 
 type connectServer struct {
-	cons [ARRARY_LEN]*clientManager
+	clients [ARRARY_LEN]*clientManager
 }
 
 func (s *connectServer) startListen() {
@@ -72,7 +72,7 @@ func (s *connectServer) handlerClientLogin(c net.Conn) (*Client, error) {
 	}
 
 	//check token
-	set := s.cons[req.Token[0]%ARRARY_LEN]
+	set := s.clients[req.Token[0]%ARRARY_LEN]
 	key := fmt.Sprintf(keyformat, req.Token)
 	set.lo.RLock()
 	_, ok := set.mclient[key]
@@ -110,12 +110,13 @@ func (s *connectServer) handlerClientLogin(c net.Conn) (*Client, error) {
 	return ret, nil
 }
 
+func (s *connectServer) handlerClientRes(pa *logicPacket) {
+	clis := s.clients[pa.token[0]%ARRARY_LEN]
+
+	clis.pushResponse(pa)
+}
+
 func (s *connectServer) exitClient(key []byte, keystr string) {
-	set := s.cons[key[0]%ARRARY_LEN]
-
-	set.lo.Lock()
-	delete(set.mclient, keystr)
-	set.lo.Unlock()
-
-	golog.Info("token:", keystr, "connect exit!")
+	clis := s.clients[key[0]%ARRARY_LEN]
+	clis.exitClient(keystr)
 }
