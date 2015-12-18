@@ -15,6 +15,7 @@ import (
 type logicPacket struct {
 	token []byte
 	cmd   uint32
+	sn    string
 	data  []byte
 }
 
@@ -67,7 +68,7 @@ func (s *logicServer) read(buf []byte) (*logicPacket, error) {
 			return nil, err
 		}
 
-		return &logicPacket{req.Token, cmd, buf[:n]}, nil
+		return &logicPacket{req.Token, cmd, req.Sn, buf[:n]}, nil
 	case aproto.KEEPALIVE_CMD:
 		return &keepalive, nil
 	}

@@ -13,6 +13,8 @@ import (
 	"net"
 )
 
+const keyformat string = "%02X"
+
 type connectServer struct {
 	cons [ARRARY_LEN]*clientManager
 }
@@ -71,7 +73,7 @@ func (s *connectServer) handlerClientLogin(c net.Conn) (*Client, error) {
 
 	//check token
 	set := s.cons[req.Token[0]%ARRARY_LEN]
-	key := fmt.Sprintf("%02X", req.Token)
+	key := fmt.Sprintf(keyformat, req.Token)
 	set.lo.RLock()
 	_, ok := set.mclient[key]
 	if ok {
