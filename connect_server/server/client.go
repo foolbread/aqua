@@ -4,6 +4,7 @@
 package server
 
 import (
+	aerr "aqua/common/error"
 	anet "aqua/common/net"
 	aproto "aqua/common/proto"
 	"fbcommon/golog"
@@ -31,6 +32,7 @@ func newClient(cid string, token []byte, con net.Conn) *Client {
 func (s *Client) run() {
 	var buf [4096]byte
 	var ser *logicServer
+
 	for {
 		req, err := s.readRequest(buf[:])
 		if err != nil {
@@ -40,9 +42,9 @@ func (s *Client) run() {
 
 		ser = g_logicmanager.getServer(int(req.ServiceType), s.Token)
 		if ser == nil {
+			golog.Error(aerr.ErrNoLogicSvr)
 			return
 		}
-
 	}
 }
 

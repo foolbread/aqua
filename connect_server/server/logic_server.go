@@ -44,14 +44,16 @@ func newLogicServer(t int, c net.Conn) *logicServer {
 }
 
 func (s *logicServer) run() {
-
 	var buf [4096]byte
+
+	logic_timer.NewTimer(checkalive_time, s.checkKeepalive)
 
 	for {
 		pa, err := s.read(buf[:])
 		if err != nil {
 			golog.Error(err)
-			continue
+			g_logicmanager.exitServer(s.Service_type, s.Addr)
+			return
 		}
 
 		switch pa.cmd {
@@ -89,8 +91,11 @@ func (s *logicServer) send(d []byte) error {
 }
 
 func (s *logicServer) checkKeepalive() {
-	if s.alive.Get() {
-		s.alive.Set(false)
+	if !s.alive.Get() {
+		s.Con.Close()
+		return
 	}
 
+	s.alive.Set(false)
+	logic_timer.NewTimer(checkalive_time, s.checkKeepalive)
 }

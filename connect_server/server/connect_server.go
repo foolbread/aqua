@@ -55,7 +55,7 @@ func (s *connectServer) handlerClientCon(c net.Conn) {
 	cli.run()
 
 	//exit client
-	s.exitClient(cli.Token, cli.TokenStr)
+	s.exitClient(cli.Token)
 }
 
 func (s *connectServer) handlerClientLogin(c net.Conn) (*Client, error) {
@@ -97,13 +97,13 @@ func (s *connectServer) handlerClientLogin(c net.Conn) (*Client, error) {
 	//construct login response
 	d, err := aproto.MarshalLoginRes(req.Token, aproto.STATUS_OK, req.Cid)
 	if err != nil {
-		s.exitClient(req.Token, key)
+		s.exitClient(req.Token)
 		return nil, err
 	}
 
 	err = anet.SendPacket(c, d)
 	if err != nil {
-		s.exitClient(req.Token, key)
+		s.exitClient(req.Token)
 		return nil, err
 	}
 
@@ -116,7 +116,8 @@ func (s *connectServer) handlerClientRes(pa *logicPacket) {
 	clis.pushResponse(pa)
 }
 
-func (s *connectServer) exitClient(key []byte, keystr string) {
+func (s *connectServer) exitClient(key []byte) {
 	clis := s.clients[key[0]%ARRARY_LEN]
+	keystr := fmt.Sprintln(keyformat, key)
 	clis.exitClient(keystr)
 }

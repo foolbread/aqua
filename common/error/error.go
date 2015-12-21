@@ -8,7 +8,8 @@ import (
 )
 
 var (
-	ErrPacketLen = errors.New("packet len is too long!")
-	ErrConnExsit = errors.New("connect is exsit!")
-	ErrUnknowCmd = errors.New("unknow cmd!")
+	ErrPacketLen  = errors.New("packet len is too long!")
+	ErrConnExsit  = errors.New("connect is exsit!")
+	ErrUnknowCmd  = errors.New("unknow cmd!")
+	ErrNoLogicSvr = errors.New("can't get any logic server!")
 )
