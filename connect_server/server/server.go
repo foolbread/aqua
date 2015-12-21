@@ -25,6 +25,7 @@ func InitServer() {
 	g_logicmanager.startListen()
 
 	keepalive.cmd = aproto.KEEPALIVE_CMD
+	logic_timer.Start()
 }
 
 var g_conserver *connectServer

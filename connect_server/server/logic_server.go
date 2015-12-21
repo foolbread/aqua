@@ -9,8 +9,13 @@ import (
 	aproto "aqua/common/proto"
 	fbatomic "fbcommon/atomic"
 	"fbcommon/golog"
+	fbtime "fbcommon/time"
 	"net"
+	"time"
 )
+
+var logic_timer fbtime.Timer
+var checkalive_time time.Duration = 15 * time.Second
 
 type logicPacket struct {
 	token []byte
@@ -39,7 +44,9 @@ func newLogicServer(t int, c net.Conn) *logicServer {
 }
 
 func (s *logicServer) run() {
+
 	var buf [4096]byte
+
 	for {
 		pa, err := s.read(buf[:])
 		if err != nil {
@@ -82,5 +89,8 @@ func (s *logicServer) send(d []byte) error {
 }
 
 func (s *logicServer) checkKeepalive() {
+	if s.alive.Get() {
+		s.alive.Set(false)
+	}
 
 }
