@@ -10,7 +10,7 @@ import (
 func InitServer() {
 	golog.Info("initing login server......")
 	g_server = new(loginServer)
-	g_server.startListen()
+	go g_server.startListen()
 }
 
 var g_server *loginServer
