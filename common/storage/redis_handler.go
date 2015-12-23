@@ -5,6 +5,7 @@ package storage
 
 import (
 	"github.com/mediocregopher/radix.v2/redis"
+	"sync"
 	"time"
 )
 
@@ -14,12 +15,14 @@ type RedisHandler struct {
 	server string
 	pwd    string
 	client *redis.Client
+	lo     *sync.Mutex
 }
 
 func NewRedisHandler(ser string, pwd string) (*RedisHandler, error) {
 	ret := new(RedisHandler)
 	ret.server = ser
 	ret.pwd = pwd
+	ret.lo = new(sync.Mutex)
 
 	return ret, ret.connect()
 }
@@ -68,17 +71,21 @@ func (s *RedisHandler) authHandler() error {
 }
 
 func (s *RedisHandler) redisCmd(cmd string, args ...interface{}) *redis.Resp {
+	s.lo.Lock()
 	rsp := s.client.Cmd(cmd, args)
 	if rsp.Err != nil {
 		err := s.connect()
 		if err != nil {
 			rsp.Err = err
+			s.lo.Unlock()
 			return rsp
 		}
 
+		s.lo.Unlock()
 		return s.client.Cmd(cmd, args)
 	}
 
+	s.lo.Unlock()
 	return rsp
 }
 
