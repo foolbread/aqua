@@ -27,7 +27,7 @@ func InitStorageManager() {
 			if err != nil {
 				golog.Critical(err)
 			}
-			g_storage.redis_handlers[k] = append(g_storage.redis_handlers[k], handler)
+			g_storage.storage_handlers[k] = append(g_storage.storage_handlers[k], astorage.NewStorageHandler(handler))
 		}
 	}
 
@@ -40,17 +40,17 @@ func GetStorage() *storageManager {
 var g_storage *storageManager
 
 type storageManager struct {
-	redis_handlers [][]*astorage.RedisHandler
+	storage_handlers [][]*astorage.StorageHandler
 }
 
 func newStorageManager() *storageManager {
 	ret := new(storageManager)
-	ret.redis_handlers = make([][]*astorage.RedisHandler, len(config.GetConfig().GetDBInfos()))
+	ret.storage_handlers = make([][]*astorage.StorageHandler, len(config.GetConfig().GetDBInfos()))
 
 	return ret
 }
 
-func (s *storageManager) GetRedisHandler(k []byte) *astorage.RedisHandler {
-	as := s.redis_handlers[len(s.redis_handlers)%int(k[0])]
+func (s *storageManager) GetStorageHandler(k []byte) *astorage.StorageHandler {
+	as := s.storage_handlers[len(s.storage_handlers)%int(k[0])]
 	return as[len(as)%int(k[0])]
 }
