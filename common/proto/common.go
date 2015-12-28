@@ -10,19 +10,22 @@ import (
 
 //status
 const (
-	STATUS_OK = 0
+	STATUS_OK     = 0
+	ALREADY_LOGIN = 1
 )
 
 //cmd
 const (
-	KEEPALIVE_CMD      = 0x00
-	LOGINREQ_CMD       = 0x01
-	LOGINRES_CMD       = 0x02
-	REDIRECT_CMD       = 0x04
-	SERVICEREQ_CMD     = 0x05
-	SERVICERES_CMD     = 0x06
-	SVRREGISTERREQ_CMD = 0x07
-	SVRREGISTERRES_CMD = 0x08
+	KEEPALIVE_CMD      = 0
+	LOGINREQ_CMD       = 1
+	LOGINRES_CMD       = 2
+	REDIRECT_CMD       = 4
+	SERVICEREQ_CMD     = 5
+	SERVICERES_CMD     = 6
+	CONREGISTERREQ_CMD = 7
+	CONREGISTERRES_CMD = 8
+	LOCREGISTERREQ_CMD = 9
+	LOCREGISTERRES_CMD = 10
 )
 
 func UnmarshalLoginReq(d []byte) (*LoginRequest, error) {
@@ -55,10 +58,10 @@ func MarshalLoginRes(token []byte, status int32, cid string) ([]byte, error) {
 	return buf, nil
 }
 
-func MarshalRedirect(token []byte, addr string) ([]byte, error) {
+func MarshalRedirect(status int, token []byte, addr string) ([]byte, error) {
 	var buf []byte = make([]byte, HEAD_LEN, 1024)
 	var res RedirectResponse
-	res.Status = 0
+	res.Status = int32(status)
 	res.Token = token
 	res.Addrs = addr
 
@@ -117,8 +120,8 @@ func MarshalServiceRes(to []byte, t int32, sn string, s int32, data []byte) ([]b
 	return buf, nil
 }
 
-func UnmarshalSvrRegisterReq(d []byte) (*ServerRegisterReq, error) {
-	var req ServerRegisterReq
+func UnmarshalConnectRegisterReq(d []byte) (*ConnectRegisterReq, error) {
+	var req ConnectRegisterReq
 	err := req.Unmarshal(d)
 	if err != nil {
 		return nil, err
@@ -127,9 +130,9 @@ func UnmarshalSvrRegisterReq(d []byte) (*ServerRegisterReq, error) {
 	return &req, nil
 }
 
-func MarshalSvrRegisterRes(s int32) ([]byte, error) {
+func MarshalConnectRegisterRes(s int32) ([]byte, error) {
 	var buf []byte = make([]byte, HEAD_LEN, 1024)
-	var res ServerRegisterRes
+	var res ConnectRegisterRes
 	res.Status = s
 
 	d, err := res.Marshal()
@@ -138,7 +141,36 @@ func MarshalSvrRegisterRes(s int32) ([]byte, error) {
 	}
 
 	binary.BigEndian.PutUint32(buf[4:], uint32(len(d)+HEAD_LEN))
-	binary.BigEndian.PutUint32(buf[8:], SVRREGISTERRES_CMD)
+	binary.BigEndian.PutUint32(buf[8:], CONREGISTERRES_CMD)
+
+	buf = append(buf, d...)
+
+	return buf, nil
+}
+
+func UnmarshalLogicRegisterReq(d []byte) (*LogicRegisterReq, error) {
+	var req LogicRegisterReq
+	err := req.Unmarshal(d)
+	if err != nil {
+		return nil, err
+	}
+
+	return &req, nil
+}
+
+func MarshalLogicRegisterRes(id uint32, s int32) ([]byte, error) {
+	var buf []byte = make([]byte, HEAD_LEN, 1024)
+	var res LogicRegisterRes
+	res.Status = s
+	res.Id = id
+
+	d, err := res.Marshal()
+	if err != nil {
+		return nil, err
+	}
+
+	binary.BigEndian.PutUint32(buf[4:], uint32(len(d)+HEAD_LEN))
+	binary.BigEndian.PutUint32(buf[8:], LOCREGISTERRES_CMD)
 
 	buf = append(buf, d...)
 	return buf, nil

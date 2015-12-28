@@ -13,8 +13,10 @@
 		LoginRequest
 		LoginResponse
 		RedirectResponse
-		ServerRegisterReq
-		ServerRegisterRes
+		ConnectRegisterReq
+		ConnectRegisterRes
+		LogicRegisterReq
+		LogicRegisterRes
 		ServiceRequest
 		ServiceResponse
 		PeerMessage
@@ -68,21 +70,38 @@ func (m *RedirectResponse) Reset()         { *m = RedirectResponse{} }
 func (m *RedirectResponse) String() string { return proto1.CompactTextString(m) }
 func (*RedirectResponse) ProtoMessage()    {}
 
-type ServerRegisterReq struct {
-	ServiceType uint32 `protobuf:"varint,1,opt,name=service_type,proto3" json:"service_type,omitempty"`
+type ConnectRegisterReq struct {
+	Id uint32 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 }
 
-func (m *ServerRegisterReq) Reset()         { *m = ServerRegisterReq{} }
-func (m *ServerRegisterReq) String() string { return proto1.CompactTextString(m) }
-func (*ServerRegisterReq) ProtoMessage()    {}
+func (m *ConnectRegisterReq) Reset()         { *m = ConnectRegisterReq{} }
+func (m *ConnectRegisterReq) String() string { return proto1.CompactTextString(m) }
+func (*ConnectRegisterReq) ProtoMessage()    {}
 
-type ServerRegisterRes struct {
+type ConnectRegisterRes struct {
 	Status int32 `protobuf:"varint,1,opt,name=status,proto3" json:"status,omitempty"`
 }
 
-func (m *ServerRegisterRes) Reset()         { *m = ServerRegisterRes{} }
-func (m *ServerRegisterRes) String() string { return proto1.CompactTextString(m) }
-func (*ServerRegisterRes) ProtoMessage()    {}
+func (m *ConnectRegisterRes) Reset()         { *m = ConnectRegisterRes{} }
+func (m *ConnectRegisterRes) String() string { return proto1.CompactTextString(m) }
+func (*ConnectRegisterRes) ProtoMessage()    {}
+
+type LogicRegisterReq struct {
+	ServiceType uint32 `protobuf:"varint,1,opt,name=service_type,proto3" json:"service_type,omitempty"`
+}
+
+func (m *LogicRegisterReq) Reset()         { *m = LogicRegisterReq{} }
+func (m *LogicRegisterReq) String() string { return proto1.CompactTextString(m) }
+func (*LogicRegisterReq) ProtoMessage()    {}
+
+type LogicRegisterRes struct {
+	Id     uint32 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Status int32  `protobuf:"varint,2,opt,name=status,proto3" json:"status,omitempty"`
+}
+
+func (m *LogicRegisterRes) Reset()         { *m = LogicRegisterRes{} }
+func (m *LogicRegisterRes) String() string { return proto1.CompactTextString(m) }
+func (*LogicRegisterRes) ProtoMessage()    {}
 
 type ServiceRequest struct {
 	Token       []byte `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
@@ -111,8 +130,10 @@ func init() {
 	proto1.RegisterType((*LoginRequest)(nil), "proto.LoginRequest")
 	proto1.RegisterType((*LoginResponse)(nil), "proto.LoginResponse")
 	proto1.RegisterType((*RedirectResponse)(nil), "proto.RedirectResponse")
-	proto1.RegisterType((*ServerRegisterReq)(nil), "proto.ServerRegisterReq")
-	proto1.RegisterType((*ServerRegisterRes)(nil), "proto.ServerRegisterRes")
+	proto1.RegisterType((*ConnectRegisterReq)(nil), "proto.ConnectRegisterReq")
+	proto1.RegisterType((*ConnectRegisterRes)(nil), "proto.ConnectRegisterRes")
+	proto1.RegisterType((*LogicRegisterReq)(nil), "proto.LogicRegisterReq")
+	proto1.RegisterType((*LogicRegisterRes)(nil), "proto.LogicRegisterRes")
 	proto1.RegisterType((*ServiceRequest)(nil), "proto.ServiceRequest")
 	proto1.RegisterType((*ServiceResponse)(nil), "proto.ServiceResponse")
 }
@@ -238,7 +259,7 @@ func (m *RedirectResponse) MarshalTo(data []byte) (int, error) {
 	return i, nil
 }
 
-func (m *ServerRegisterReq) Marshal() (data []byte, err error) {
+func (m *ConnectRegisterReq) Marshal() (data []byte, err error) {
 	size := m.Size()
 	data = make([]byte, size)
 	n, err := m.MarshalTo(data)
@@ -248,7 +269,53 @@ func (m *ServerRegisterReq) Marshal() (data []byte, err error) {
 	return data[:n], nil
 }
 
-func (m *ServerRegisterReq) MarshalTo(data []byte) (int, error) {
+func (m *ConnectRegisterReq) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Id != 0 {
+		data[i] = 0x8
+		i++
+		i = encodeVarintServer(data, i, uint64(m.Id))
+	}
+	return i, nil
+}
+
+func (m *ConnectRegisterRes) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *ConnectRegisterRes) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Status != 0 {
+		data[i] = 0x8
+		i++
+		i = encodeVarintServer(data, i, uint64(m.Status))
+	}
+	return i, nil
+}
+
+func (m *LogicRegisterReq) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *LogicRegisterReq) MarshalTo(data []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
@@ -261,7 +328,7 @@ func (m *ServerRegisterReq) MarshalTo(data []byte) (int, error) {
 	return i, nil
 }
 
-func (m *ServerRegisterRes) Marshal() (data []byte, err error) {
+func (m *LogicRegisterRes) Marshal() (data []byte, err error) {
 	size := m.Size()
 	data = make([]byte, size)
 	n, err := m.MarshalTo(data)
@@ -271,13 +338,18 @@ func (m *ServerRegisterRes) Marshal() (data []byte, err error) {
 	return data[:n], nil
 }
 
-func (m *ServerRegisterRes) MarshalTo(data []byte) (int, error) {
+func (m *LogicRegisterRes) MarshalTo(data []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
 	_ = l
-	if m.Status != 0 {
+	if m.Id != 0 {
 		data[i] = 0x8
+		i++
+		i = encodeVarintServer(data, i, uint64(m.Id))
+	}
+	if m.Status != 0 {
+		data[i] = 0x10
 		i++
 		i = encodeVarintServer(data, i, uint64(m.Status))
 	}
@@ -470,7 +542,25 @@ func (m *RedirectResponse) Size() (n int) {
 	return n
 }
 
-func (m *ServerRegisterReq) Size() (n int) {
+func (m *ConnectRegisterReq) Size() (n int) {
+	var l int
+	_ = l
+	if m.Id != 0 {
+		n += 1 + sovServer(uint64(m.Id))
+	}
+	return n
+}
+
+func (m *ConnectRegisterRes) Size() (n int) {
+	var l int
+	_ = l
+	if m.Status != 0 {
+		n += 1 + sovServer(uint64(m.Status))
+	}
+	return n
+}
+
+func (m *LogicRegisterReq) Size() (n int) {
 	var l int
 	_ = l
 	if m.ServiceType != 0 {
@@ -479,9 +569,12 @@ func (m *ServerRegisterReq) Size() (n int) {
 	return n
 }
 
-func (m *ServerRegisterRes) Size() (n int) {
+func (m *LogicRegisterRes) Size() (n int) {
 	var l int
 	_ = l
+	if m.Id != 0 {
+		n += 1 + sovServer(uint64(m.Id))
+	}
 	if m.Status != 0 {
 		n += 1 + sovServer(uint64(m.Status))
 	}
@@ -980,7 +1073,7 @@ func (m *RedirectResponse) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func (m *ServerRegisterReq) Unmarshal(data []byte) error {
+func (m *ConnectRegisterReq) Unmarshal(data []byte) error {
 	l := len(data)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1003,10 +1096,148 @@ func (m *ServerRegisterReq) Unmarshal(data []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: ServerRegisterReq: wiretype end group for non-group")
+			return fmt.Errorf("proto: ConnectRegisterReq: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ServerRegisterReq: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: ConnectRegisterReq: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			m.Id = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowServer
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.Id |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipServer(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthServer
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ConnectRegisterRes) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowServer
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ConnectRegisterRes: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ConnectRegisterRes: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
+			}
+			m.Status = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowServer
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.Status |= (int32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipServer(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthServer
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *LogicRegisterReq) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowServer
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: LogicRegisterReq: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: LogicRegisterReq: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1049,7 +1280,7 @@ func (m *ServerRegisterReq) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func (m *ServerRegisterRes) Unmarshal(data []byte) error {
+func (m *LogicRegisterRes) Unmarshal(data []byte) error {
 	l := len(data)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1072,13 +1303,32 @@ func (m *ServerRegisterRes) Unmarshal(data []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: ServerRegisterRes: wiretype end group for non-group")
+			return fmt.Errorf("proto: LogicRegisterRes: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ServerRegisterRes: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: LogicRegisterRes: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			m.Id = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowServer
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.Id |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
 			}

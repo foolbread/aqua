@@ -22,12 +22,21 @@ message RedirectResponse{
 	bytes token = 3;//connect to connect server
 } 
 
-message ServerRegisterReq{
+message ConnectRegisterReq{
+	uint32 id = 1;
+}
+
+message ConnectRegisterRes{
+	int32 status = 1;
+}
+
+message LogicRegisterReq{
 	uint32 service_type = 1;
 }
 
-message ServerRegisterRes{
-	int32 status = 1;
+message LogicRegisterRes{
+	uint32 id = 1;
+	int32 status = 2;
 }
 
 
