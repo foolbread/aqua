@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-var logic_timer fbtime.Timer
+var logic_timer *fbtime.Timer = fbtime.New(1 * time.Second)
 var checkalive_time time.Duration = 15 * time.Second
 
 type logicPacket struct {
