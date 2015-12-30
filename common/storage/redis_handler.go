@@ -27,6 +27,11 @@ func NewRedisHandler(ser string, pwd string) (*RedisHandler, error) {
 	return ret, ret.connect()
 }
 
+func (s *RedisHandler) AppendKey(key, value string) error {
+	rsp := s.redisCmd("APPEND", key, value)
+	return rsp.Err
+}
+
 func (s *RedisHandler) SetKey(key, value string) error {
 	rsp := s.redisCmd("SET", key, value)
 	return rsp.Err

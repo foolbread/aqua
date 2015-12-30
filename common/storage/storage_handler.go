@@ -3,9 +3,7 @@
 //@file aqua/common/storage/storage_handler.go
 package storage
 
-import ()
-
-const login_token_format = "_login_token"
+const login_session_format = "_LOGIN_SESSION"
 
 type StorageHandler struct {
 	handler *RedisHandler
@@ -18,20 +16,20 @@ func NewStorageHandler(h *RedisHandler) *StorageHandler {
 	return r
 }
 
-func (s *StorageHandler) SetUsrToken(cid string, token string) error {
-	key := cid + login_token_format
+func (s *StorageHandler) SetUsrSession(cid string, session string) error {
+	key := cid + login_session_format
 
-	return s.handler.SetKey(key, token)
+	return s.handler.SetKey(key, session)
 }
 
-func (s *StorageHandler) GetUsrToken(cid string) (string, error) {
-	key := cid + login_token_format
+func (s *StorageHandler) GetUsrSession(cid string) (string, error) {
+	key := cid + login_session_format
 
 	return s.handler.GetKey(key)
 }
 
-func (s *StorageHandler) IsExistToken(cid string) (bool, error) {
-	key := cid + login_token_format
+func (s *StorageHandler) IsExistSession(cid string) (bool, error) {
+	key := cid + login_session_format
 
 	return s.handler.ExistsKey(key)
 }

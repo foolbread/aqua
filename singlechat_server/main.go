@@ -1,6 +1,6 @@
 //@auther foolbread
 //@time 2015-11-12
-//@file main.go
+//@file aqua/singlechat_server/main.go
 package main
 
 import (

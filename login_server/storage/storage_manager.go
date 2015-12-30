@@ -6,6 +6,7 @@ package storage
 import (
 	astorage "aqua/common/storage"
 	"aqua/login_server/config"
+	"crypto/md5"
 	"fbcommon/golog"
 	"strings"
 )
@@ -50,7 +51,8 @@ func newStorageManager() *storageManager {
 	return ret
 }
 
-func (s *storageManager) GetStorageHandler(k []byte) *astorage.StorageHandler {
+func (s *storageManager) GetStorageHandler(cid string) *astorage.StorageHandler {
+	k := md5.Sum([]byte(cid))
 	as := s.storage_handlers[len(s.storage_handlers)%int(k[0])]
 	return as[len(as)%int(k[0])]
 }

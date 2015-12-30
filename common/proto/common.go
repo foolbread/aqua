@@ -12,6 +12,7 @@ import (
 const (
 	STATUS_OK     = 0
 	ALREADY_LOGIN = 1
+	SERVICE_ERROR = 2
 )
 
 //cmd
@@ -28,6 +29,17 @@ const (
 	LOCREGISTERRES_CMD = 10
 )
 
+func FillHead(d []byte, cmd uint32) []byte {
+	var buf []byte = make([]byte, HEAD_LEN, 1024)
+
+	binary.BigEndian.PutUint32(buf[4:], uint32(len(d))+HEAD_LEN)
+	binary.BigEndian.PutUint32(buf[8:], cmd)
+
+	buf = append(buf, d...)
+
+	return buf
+}
+
 func UnmarshalLoginReq(d []byte) (*LoginRequest, error) {
 	var req LoginRequest
 	err := req.Unmarshal(d)
@@ -39,7 +51,6 @@ func UnmarshalLoginReq(d []byte) (*LoginRequest, error) {
 }
 
 func MarshalLoginRes(token []byte, status int32, cid string) ([]byte, error) {
-	var buf []byte = make([]byte, HEAD_LEN, 1024)
 	var res LoginResponse
 	res.Cid = cid
 	res.Token = token
@@ -51,15 +62,12 @@ func MarshalLoginRes(token []byte, status int32, cid string) ([]byte, error) {
 		return nil, err
 	}
 
-	binary.BigEndian.PutUint32(buf[4:], uint32(len(d)+HEAD_LEN))
-	binary.BigEndian.PutUint32(buf[8:], LOGINRES_CMD)
+	buf := FillHead(d, LOGINRES_CMD)
 
-	buf = append(buf, d...)
 	return buf, nil
 }
 
 func MarshalRedirect(status int, token []byte, addr string) ([]byte, error) {
-	var buf []byte = make([]byte, HEAD_LEN, 1024)
 	var res RedirectResponse
 	res.Status = int32(status)
 	res.Token = token
@@ -70,10 +78,8 @@ func MarshalRedirect(status int, token []byte, addr string) ([]byte, error) {
 		return nil, err
 	}
 
-	binary.BigEndian.PutUint32(buf[4:], uint32(len(d)+HEAD_LEN))
-	binary.BigEndian.PutUint32(buf[8:], REDIRECT_CMD)
+	buf := FillHead(d, REDIRECT_CMD)
 
-	buf = append(buf, d...)
 	return buf, nil
 }
 
@@ -100,7 +106,6 @@ func UnmarshalServiceRes(d []byte) (*ServiceResponse, error) {
 }
 
 func MarshalServiceRes(to []byte, t int32, sn string, s int32, data []byte) ([]byte, error) {
-	var buf []byte = make([]byte, HEAD_LEN, 1024)
 	var res ServiceResponse
 	res.Token = to
 	res.ServiceType = t
@@ -113,10 +118,8 @@ func MarshalServiceRes(to []byte, t int32, sn string, s int32, data []byte) ([]b
 		return nil, err
 	}
 
-	binary.BigEndian.PutUint32(buf[4:], uint32(len(d)+HEAD_LEN))
-	binary.BigEndian.PutUint32(buf[8:], SERVICERES_CMD)
+	buf := FillHead(d, SERVICERES_CMD)
 
-	buf = append(buf, d...)
 	return buf, nil
 }
 
@@ -131,7 +134,6 @@ func UnmarshalConnectRegisterReq(d []byte) (*ConnectRegisterReq, error) {
 }
 
 func MarshalConnectRegisterRes(s int32) ([]byte, error) {
-	var buf []byte = make([]byte, HEAD_LEN, 1024)
 	var res ConnectRegisterRes
 	res.Status = s
 
@@ -140,10 +142,7 @@ func MarshalConnectRegisterRes(s int32) ([]byte, error) {
 		return nil, err
 	}
 
-	binary.BigEndian.PutUint32(buf[4:], uint32(len(d)+HEAD_LEN))
-	binary.BigEndian.PutUint32(buf[8:], CONREGISTERRES_CMD)
-
-	buf = append(buf, d...)
+	buf := FillHead(d, CONREGISTERRES_CMD)
 
 	return buf, nil
 }
@@ -159,7 +158,6 @@ func UnmarshalLogicRegisterReq(d []byte) (*LogicRegisterReq, error) {
 }
 
 func MarshalLogicRegisterRes(id uint32, s int32) ([]byte, error) {
-	var buf []byte = make([]byte, HEAD_LEN, 1024)
 	var res LogicRegisterRes
 	res.Status = s
 	res.Id = id
@@ -169,9 +167,7 @@ func MarshalLogicRegisterRes(id uint32, s int32) ([]byte, error) {
 		return nil, err
 	}
 
-	binary.BigEndian.PutUint32(buf[4:], uint32(len(d)+HEAD_LEN))
-	binary.BigEndian.PutUint32(buf[8:], LOCREGISTERRES_CMD)
+	buf := FillHead(d, LOCREGISTERRES_CMD)
 
-	buf = append(buf, d...)
 	return buf, nil
 }
