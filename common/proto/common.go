@@ -29,6 +29,8 @@ const (
 	LOCREGISTERRES_CMD = 10
 )
 
+var KeepAlive []byte = []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0c}
+
 func FillHead(d []byte, cmd uint32) []byte {
 	var buf []byte = make([]byte, HEAD_LEN, 1024)
 
@@ -131,6 +133,31 @@ func UnmarshalConnectRegisterReq(d []byte) (*ConnectRegisterReq, error) {
 	}
 
 	return &req, nil
+}
+
+func MarshalConnectRegisterReq(id uint32) ([]byte, error) {
+	var req ConnectRegisterReq
+	req.Id = id
+
+	d, err := req.Marshal()
+	if err != nil {
+		return nil, err
+	}
+
+	buf := FillHead(d, CONREGISTERREQ_CMD)
+
+	return buf, nil
+}
+
+func UnmarshalConnectRegisterRes(d []byte) (*ConnectRegisterRes, error) {
+	var res ConnectRegisterRes
+
+	err := res.Unmarshal(d)
+	if err != nil {
+		return nil, err
+	}
+
+	return &res, nil
 }
 
 func MarshalConnectRegisterRes(s int32) ([]byte, error) {
