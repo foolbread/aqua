@@ -22,6 +22,7 @@ func InitServer() {
 		g_conserver.clients[i] = newClientManager()
 	}
 	g_conserver.startListen()
+	g_conserver.startRegister()
 
 	g_logicmanager = new(logicManager)
 	g_logicmanager.startListen()
