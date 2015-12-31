@@ -120,7 +120,7 @@ func (s *loginServer) handlerRegister(c net.Conn) {
 	}
 
 	//register info
-	csvr := newConnectServer(Id, c)
+	csvr := newConnectServer(req.Id, req.ListenAddr, c)
 	g_conmanager.addConnectSvr(csvr)
 	golog.Info("id:", Id, "addr:", c.RemoteAddr().String(), "connect server register success!")
 

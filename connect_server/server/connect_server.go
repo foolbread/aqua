@@ -21,6 +21,7 @@ var keepalive_time time.Duration = 10 * time.Second
 type connectServer struct {
 	id      uint32
 	con     net.Conn
+	addr    string
 	clients [ARRARY_LEN]*clientManager
 }
 
@@ -49,7 +50,7 @@ func (s *connectServer) register(a string) {
 		break
 	}
 
-	data, err := aproto.MarshalConnectRegisterReq(s.id)
+	data, err := aproto.MarshalConnectRegisterReq(s.id, s.addr)
 	if err != nil {
 		golog.Critical(err)
 	}

@@ -18,6 +18,7 @@ func InitServer() {
 	golog.Info("initing connect server......")
 	g_conserver = new(connectServer)
 	g_conserver.id = uint32(config.GetConfig().GetConnectId())
+	g_conserver.addr = config.GetConfig().GetOuterAddr()
 	for i := 0; i < ARRARY_LEN; i++ {
 		g_conserver.clients[i] = newClientManager()
 	}

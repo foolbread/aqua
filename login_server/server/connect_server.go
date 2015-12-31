@@ -23,10 +23,10 @@ type connectServer struct {
 	Con   net.Conn
 }
 
-func newConnectServer(id uint32, con net.Conn) *connectServer {
+func newConnectServer(id uint32, addr string, con net.Conn) *connectServer {
 	r := new(connectServer)
 	r.Id = id
-	r.Addr = con.RemoteAddr().String()
+	r.Addr = addr
 	r.Con = con
 	r.Alive.Set(true)
 

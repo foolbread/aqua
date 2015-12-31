@@ -135,9 +135,10 @@ func UnmarshalConnectRegisterReq(d []byte) (*ConnectRegisterReq, error) {
 	return &req, nil
 }
 
-func MarshalConnectRegisterReq(id uint32) ([]byte, error) {
+func MarshalConnectRegisterReq(id uint32, addr string) ([]byte, error) {
 	var req ConnectRegisterReq
 	req.Id = id
+	req.ListenAddr = addr
 
 	d, err := req.Marshal()
 	if err != nil {
