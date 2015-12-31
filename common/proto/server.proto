@@ -18,7 +18,7 @@ message LoginResponse{
 
 message RedirectResponse{
 	int32 status = 1;//if 0 success, else fail
-	string addrs = 2;
+	string addr = 2;
 	bytes token = 3;//connect to connect server
 } 
 

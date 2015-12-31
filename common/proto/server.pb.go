@@ -62,7 +62,7 @@ func (*LoginResponse) ProtoMessage()    {}
 
 type RedirectResponse struct {
 	Status int32  `protobuf:"varint,1,opt,name=status,proto3" json:"status,omitempty"`
-	Addrs  string `protobuf:"bytes,2,opt,name=addrs,proto3" json:"addrs,omitempty"`
+	Addr   string `protobuf:"bytes,2,opt,name=addr,proto3" json:"addr,omitempty"`
 	Token  []byte `protobuf:"bytes,3,opt,name=token,proto3" json:"token,omitempty"`
 }
 
@@ -243,11 +243,11 @@ func (m *RedirectResponse) MarshalTo(data []byte) (int, error) {
 		i++
 		i = encodeVarintServer(data, i, uint64(m.Status))
 	}
-	if len(m.Addrs) > 0 {
+	if len(m.Addr) > 0 {
 		data[i] = 0x12
 		i++
-		i = encodeVarintServer(data, i, uint64(len(m.Addrs)))
-		i += copy(data[i:], m.Addrs)
+		i = encodeVarintServer(data, i, uint64(len(m.Addr)))
+		i += copy(data[i:], m.Addr)
 	}
 	if m.Token != nil {
 		if len(m.Token) > 0 {
@@ -536,7 +536,7 @@ func (m *RedirectResponse) Size() (n int) {
 	if m.Status != 0 {
 		n += 1 + sovServer(uint64(m.Status))
 	}
-	l = len(m.Addrs)
+	l = len(m.Addr)
 	if l > 0 {
 		n += 1 + l + sovServer(uint64(l))
 	}
@@ -1008,7 +1008,7 @@ func (m *RedirectResponse) Unmarshal(data []byte) error {
 			}
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Addrs", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Addr", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1033,7 +1033,7 @@ func (m *RedirectResponse) Unmarshal(data []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Addrs = string(data[iNdEx:postIndex])
+			m.Addr = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
