@@ -43,6 +43,7 @@ func (s *connectServer) register(a string) {
 		if err != nil {
 			golog.Error(err)
 			time.Sleep(5 * time.Second)
+			continue
 		}
 
 		break
@@ -55,13 +56,19 @@ func (s *connectServer) register(a string) {
 
 	err = anet.SendPacket(s.con, data)
 	if err != nil {
-		golog.Critical(err)
+		golog.Error(err)
+		s.con.Close()
+		s.startRegister()
+		return
 	}
 
 	var buf [1024]byte
 	l, _, err := anet.RecvPacket(s.con, buf[:])
 	if err != nil {
-		golog.Critical(err)
+		golog.Error(err)
+		s.con.Close()
+		s.startRegister()
+		return
 	}
 
 	res, err := aproto.UnmarshalConnectRegisterRes(buf[aproto.HEAD_LEN:l])

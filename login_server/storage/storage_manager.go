@@ -53,6 +53,6 @@ func newStorageManager() *storageManager {
 
 func (s *storageManager) GetStorageHandler(cid string) *astorage.StorageHandler {
 	k := md5.Sum([]byte(cid))
-	as := s.storage_handlers[len(s.storage_handlers)%int(k[0])]
-	return as[len(as)%int(k[0])]
+	as := s.storage_handlers[int(k[0])%len(s.storage_handlers)]
+	return as[int(k[0])%len(as)]
 }

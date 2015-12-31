@@ -98,7 +98,7 @@ func (s *loginServer) handlerRegister(c net.Conn) {
 		return
 	}
 
-	req, err := aproto.UnmarshalConnectRegisterReq(buf[:l])
+	req, err := aproto.UnmarshalConnectRegisterReq(buf[aproto.HEAD_LEN:l])
 	if err != nil {
 		golog.Error(err)
 		return
@@ -122,6 +122,7 @@ func (s *loginServer) handlerRegister(c net.Conn) {
 	//register info
 	csvr := newConnectServer(Id, c)
 	g_conmanager.addConnectSvr(csvr)
+	golog.Info("id:", Id, "addr:", c.RemoteAddr().String(), "connect server register success!")
 
 	csvr.run()
 }
@@ -138,36 +139,38 @@ func (s *loginServer) handlerConnect(c net.Conn) {
 	}
 
 	//parse client data
-	h := aproto.UnmarshalHead(buf[:l])
+	h := aproto.UnmarshalHead(buf[:aproto.HEAD_LEN])
 	switch h.Cmd {
 	case aproto.LOGINREQ_CMD:
 		s.handlerLogin(c, buf[:l])
+	default:
+		golog.Info("unknow cmd:", h.Cmd)
 	}
 }
 
 func (s *loginServer) handlerLogin(c net.Conn, d []byte) {
 	//parse login
-	req, err := aproto.UnmarshalLoginReq(d)
+	req, err := aproto.UnmarshalLoginReq(d[aproto.HEAD_LEN:])
 	if err != nil {
 		golog.Error(err)
 		return
 	}
 
 	handler := storage.GetStorage().GetStorageHandler(req.Cid)
-	//check token
+	/*//check token
 	b, err := handler.IsExistSession(req.Cid)
 	if err != nil {
 		golog.Error(err)
 		return
-	}
+	}*/
 
 	var info redirectInfo
 	info.status = aproto.STATUS_OK
-	if b {
+	/*if b {
 		info.status = aproto.ALREADY_LOGIN
 		s.handlerRedirect(c, &info)
 		return
-	}
+	}*/
 
 	//token
 	info.token = md5.Sum([]byte(req.Cid + c.RemoteAddr().String()))
