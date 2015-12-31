@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-var logic_timer *fbtime.Timer = fbtime.New(1 * time.Second)
+var connect_timer *fbtime.Timer = fbtime.New(1 * time.Second)
 var checkalive_time time.Duration = 15 * time.Second
 
 type logicPacket struct {
@@ -46,7 +46,7 @@ func newLogicServer(t int, c net.Conn) *logicServer {
 func (s *logicServer) run() {
 	var buf [4096]byte
 
-	logic_timer.NewTimer(checkalive_time, s.checkKeepalive)
+	connect_timer.NewTimer(checkalive_time, s.checkKeepalive)
 
 	for {
 		pa, err := s.read(buf[:])
@@ -97,5 +97,5 @@ func (s *logicServer) checkKeepalive() {
 	}
 
 	s.alive.Set(false)
-	logic_timer.NewTimer(checkalive_time, s.checkKeepalive)
+	connect_timer.NewTimer(checkalive_time, s.checkKeepalive)
 }

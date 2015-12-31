@@ -11,11 +11,16 @@ import (
 	"fbcommon/golog"
 	"fmt"
 	"net"
+	"time"
 )
 
 const keyformat string = "%02X"
 
+var keepalive_time time.Duration = 10 * time.Second
+
 type connectServer struct {
+	id      uint32
+	con     net.Conn
 	clients [ARRARY_LEN]*clientManager
 }
 
@@ -23,6 +28,63 @@ func (s *connectServer) startListen() {
 	oaddr := config.GetConfig().GetOuterAddr()
 
 	go s.server(oaddr)
+}
+
+func (s *connectServer) startRegister() {
+	addr := config.GetConfig().GetLoginAddr()
+
+	go s.register(addr)
+}
+
+func (s *connectServer) register(a string) {
+	var err error
+	for {
+		s.con, err = net.Dial("tcp", a)
+		if err != nil {
+			golog.Error(err)
+			time.Sleep(5 * time.Second)
+		}
+
+		break
+	}
+
+	data, err := aproto.MarshalConnectRegisterReq(s.id)
+	if err != nil {
+		golog.Critical(err)
+	}
+
+	err = anet.SendPacket(s.con, data)
+	if err != nil {
+		golog.Critical(err)
+	}
+
+	var buf [1024]byte
+	l, _, err := anet.RecvPacket(s.con, buf[:])
+	if err != nil {
+		golog.Critical(err)
+	}
+
+	res, err := aproto.UnmarshalConnectRegisterRes(buf[aproto.HEAD_LEN:l])
+	if err != nil {
+		golog.Critical(err)
+	}
+
+	if res.Status == aproto.STATUS_OK {
+		golog.Info("connect to login server:", a, "success!")
+		go s.keepalive()
+	}
+}
+
+func (s *connectServer) keepalive() {
+	err := anet.SendPacket(s.con, aproto.KeepAlive[:])
+	if err != nil {
+		golog.Error(err)
+		s.con.Close()
+		s.startRegister()
+		return
+	}
+
+	connect_timer.NewTimer(keepalive_time, s.keepalive)
 }
 
 func (s *connectServer) server(a string) {

@@ -81,13 +81,13 @@ func (s *logicManager) handlerLogicLogin(c net.Conn) (*logicServer, error) {
 		return nil, err
 	}
 
-	req, err := aproto.UnmarshalSvrRegisterReq(buf[:n])
+	req, err := aproto.UnmarshalLogicRegisterReq(buf[:n])
 	if err != nil {
 		return nil, err
 	}
 
 	//response
-	da, err := aproto.MarshalSvrRegisterRes(aproto.STATUS_OK)
+	da, err := aproto.MarshalLogicRegisterRes(g_conserver.id, aproto.STATUS_OK)
 	if err != nil {
 		return nil, err
 	}

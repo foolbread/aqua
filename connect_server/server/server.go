@@ -5,6 +5,7 @@ package server
 
 import (
 	aproto "aqua/common/proto"
+	"aqua/connect_server/config"
 	"fbcommon/golog"
 	"time"
 )
@@ -16,6 +17,7 @@ var default_timeout time.Duration = 2 * time.Minute
 func InitServer() {
 	golog.Info("initing connect server......")
 	g_conserver = new(connectServer)
+	g_conserver.id = uint32(config.GetConfig().GetConnectId())
 	for i := 0; i < ARRARY_LEN; i++ {
 		g_conserver.clients[i] = newClientManager()
 	}
@@ -25,7 +27,7 @@ func InitServer() {
 	g_logicmanager.startListen()
 
 	keepalive.cmd = aproto.KEEPALIVE_CMD
-	go logic_timer.Start()
+	go connect_timer.Start()
 }
 
 var g_conserver *connectServer
