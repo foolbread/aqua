@@ -73,7 +73,7 @@ func MarshalRedirect(status int, token []byte, addr string) ([]byte, error) {
 	var res RedirectResponse
 	res.Status = int32(status)
 	res.Token = token
-	res.Addrs = addr
+	res.Addr = addr
 
 	d, err := res.Marshal()
 	if err != nil {

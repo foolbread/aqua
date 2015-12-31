@@ -188,6 +188,6 @@ func (s *connectServer) handlerClientRes(pa *logicPacket) {
 
 func (s *connectServer) exitClient(key []byte) {
 	clis := s.clients[key[0]%ARRARY_LEN]
-	keystr := fmt.Sprintln(keyformat, key)
+	keystr := fmt.Sprintf(keyformat, key)
 	clis.exitClient(keystr)
 }
