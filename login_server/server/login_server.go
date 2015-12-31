@@ -185,7 +185,7 @@ func (s *loginServer) handlerLogin(c net.Conn, d []byte) {
 	//store session
 	session := fmt.Sprintf(session_format, info.token, csvr.Id)
 	handler.SetUsrSession(req.Cid, session)
-	golog.Info("redirect new client:", c.RemoteAddr().String(), "cid:", req.Cid, "session:", session)
+	golog.Info("redirect new client:", c.RemoteAddr().String(), "to:", csvr.Addr, "cid:", req.Cid, "session:", session)
 
 	s.handlerRedirect(c, &info)
 }
