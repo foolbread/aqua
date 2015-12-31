@@ -71,7 +71,8 @@ func (m *RedirectResponse) String() string { return proto1.CompactTextString(m) 
 func (*RedirectResponse) ProtoMessage()    {}
 
 type ConnectRegisterReq struct {
-	Id uint32 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id         uint32 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	ListenAddr string `protobuf:"bytes,2,opt,name=listen_addr,proto3" json:"listen_addr,omitempty"`
 }
 
 func (m *ConnectRegisterReq) Reset()         { *m = ConnectRegisterReq{} }
@@ -278,6 +279,12 @@ func (m *ConnectRegisterReq) MarshalTo(data []byte) (int, error) {
 		data[i] = 0x8
 		i++
 		i = encodeVarintServer(data, i, uint64(m.Id))
+	}
+	if len(m.ListenAddr) > 0 {
+		data[i] = 0x12
+		i++
+		i = encodeVarintServer(data, i, uint64(len(m.ListenAddr)))
+		i += copy(data[i:], m.ListenAddr)
 	}
 	return i, nil
 }
@@ -547,6 +554,10 @@ func (m *ConnectRegisterReq) Size() (n int) {
 	_ = l
 	if m.Id != 0 {
 		n += 1 + sovServer(uint64(m.Id))
+	}
+	l = len(m.ListenAddr)
+	if l > 0 {
+		n += 1 + l + sovServer(uint64(l))
 	}
 	return n
 }
@@ -1121,6 +1132,35 @@ func (m *ConnectRegisterReq) Unmarshal(data []byte) error {
 					break
 				}
 			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ListenAddr", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowServer
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthServer
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ListenAddr = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipServer(data[iNdEx:])

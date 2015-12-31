@@ -24,6 +24,7 @@ message RedirectResponse{
 
 message ConnectRegisterReq{
 	uint32 id = 1;
+	string listen_addr = 2;
 }
 
 message ConnectRegisterRes{
