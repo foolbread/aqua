@@ -156,7 +156,7 @@ func (s *loginServer) handlerLogin(c net.Conn, d []byte) {
 		return
 	}
 
-	handler := storage.GetStorage().GetStorageHandler(req.Cid)
+	handler := storage.GetStorage().GetSessionHandler(req.Cid)
 	/*//check token
 	b, err := handler.IsExistSession(req.Cid)
 	if err != nil {

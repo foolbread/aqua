@@ -8,9 +8,11 @@ import (
 	anet "aqua/common/net"
 	aproto "aqua/common/proto"
 	"aqua/connect_server/config"
+	"aqua/connect_server/storage"
 	"fbcommon/golog"
 	"fmt"
 	"net"
+	"strings"
 	"time"
 )
 
@@ -124,6 +126,10 @@ func (s *connectServer) handlerClientCon(c net.Conn) {
 
 	cli.run()
 
+	//delete session
+	handler := storage.GetStorage().GetSessionHandler(cli.Cid)
+	handler.DelUsrSession(cli.Cid)
+
 	//exit client
 	s.exitClient(cli.Token)
 }
@@ -141,11 +147,21 @@ func (s *connectServer) handlerClientLogin(c net.Conn) (*Client, error) {
 		return nil, err
 	}
 
+	tokenstr := fmt.Sprintf(keyformat, req.Token)
+	handler := storage.GetStorage().GetSessionHandler(req.Cid)
+	session, err := handler.GetUsrSession(req.Cid)
+	if err != nil {
+		return nil, err
+	}
+
+	if !s.checkSession(tokenstr, session) {
+		return nil, aeer.ErrSession
+	}
+
 	//check token
 	set := s.clients[req.Token[0]%ARRARY_LEN]
-	key := fmt.Sprintf(keyformat, req.Token)
 	set.lo.RLock()
-	_, ok := set.mclient[key]
+	_, ok := set.mclient[tokenstr]
 	if ok {
 		set.lo.RUnlock()
 		return nil, aeer.ErrConnExsit
@@ -154,10 +170,10 @@ func (s *connectServer) handlerClientLogin(c net.Conn) (*Client, error) {
 
 	set.lo.Lock()
 	//double check
-	_, ok = set.mclient[key]
+	_, ok = set.mclient[tokenstr]
 	if !ok {
 		ret = newClient(req.Cid, req.Token, c)
-		set.mclient[key] = ret
+		set.mclient[tokenstr] = ret
 	} else {
 		set.lo.Unlock()
 		return nil, aeer.ErrConnExsit
@@ -178,6 +194,15 @@ func (s *connectServer) handlerClientLogin(c net.Conn) (*Client, error) {
 	}
 
 	return ret, nil
+}
+
+func (s *connectServer) checkSession(token string, session string) bool {
+	pos := strings.LastIndex(session, "_")
+	if pos < 0 {
+		return false
+	}
+
+	return strings.EqualFold(token, session[:pos])
 }
 
 func (s *connectServer) handlerClientRes(pa *logicPacket) {

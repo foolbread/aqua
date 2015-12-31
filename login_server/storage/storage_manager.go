@@ -17,7 +17,7 @@ func InitStorageManager() {
 	golog.Info("initing login storage manager...")
 	g_storage = newStorageManager()
 
-	info := config.GetConfig().GetDBInfos()
+	info := config.GetConfig().GetSessionDBInfos()
 	for k, v := range info {
 		idx := strings.LastIndex(v, ":")
 		addr := v[:idx]
@@ -28,7 +28,7 @@ func InitStorageManager() {
 			if err != nil {
 				golog.Critical(err)
 			}
-			g_storage.storage_handlers[k] = append(g_storage.storage_handlers[k], astorage.NewStorageHandler(handler))
+			g_storage.session_storages[k] = append(g_storage.session_storages[k], astorage.NewStorageHandler(handler))
 		}
 	}
 
@@ -41,18 +41,18 @@ func GetStorage() *storageManager {
 var g_storage *storageManager
 
 type storageManager struct {
-	storage_handlers [][]*astorage.StorageHandler
+	session_storages [][]*astorage.StorageHandler
 }
 
 func newStorageManager() *storageManager {
 	ret := new(storageManager)
-	ret.storage_handlers = make([][]*astorage.StorageHandler, len(config.GetConfig().GetDBInfos()))
+	ret.session_storages = make([][]*astorage.StorageHandler, len(config.GetConfig().GetSessionDBInfos()))
 
 	return ret
 }
 
-func (s *storageManager) GetStorageHandler(cid string) *astorage.StorageHandler {
+func (s *storageManager) GetSessionHandler(cid string) *astorage.StorageHandler {
 	k := md5.Sum([]byte(cid))
-	as := s.storage_handlers[int(k[0])%len(s.storage_handlers)]
+	as := s.session_storages[int(k[0])%len(s.session_storages)]
 	return as[int(k[0])%len(as)]
 }

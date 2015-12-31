@@ -28,9 +28,9 @@ func loadConfig() {
 	golog.Info("inner_addr:", str)
 	g_config.setInnerAddr(str)
 
-	strs := con.MustStringSlice("redis", "redis_info", nil)
+	strs := con.MustStringSlice("session_storage", "redis_info", nil)
 	golog.Info("redis_info:", strs)
-	g_config.setDBInfos(strs)
+	g_config.setSessionDBInfos(strs)
 }
 
 func GetConfig() *loginServerConfig {
@@ -42,7 +42,7 @@ var g_config *loginServerConfig
 type loginServerConfig struct {
 	outer_addr string
 	inner_addr string
-	db_info    []string
+	session_db []string
 }
 
 func (c *loginServerConfig) setOuterAddr(a string) {
@@ -61,10 +61,10 @@ func (c *loginServerConfig) GetInnerAddr() string {
 	return c.inner_addr
 }
 
-func (c *loginServerConfig) setDBInfos(a []string) {
-	c.db_info = a
+func (c *loginServerConfig) setSessionDBInfos(a []string) {
+	c.session_db = a
 }
 
-func (c *loginServerConfig) GetDBInfos() []string {
-	return c.db_info
+func (c *loginServerConfig) GetSessionDBInfos() []string {
+	return c.session_db
 }

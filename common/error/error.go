@@ -13,4 +13,5 @@ var (
 	ErrUnknowCmd  = errors.New("unknow cmd!")
 	ErrNoLogicSvr = errors.New("can't get any logic server!")
 	ErrKeepalive  = errors.New("keepalive error!")
+	ErrSession    = errors.New("invalid session!")
 )

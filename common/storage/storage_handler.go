@@ -28,6 +28,12 @@ func (s *StorageHandler) GetUsrSession(cid string) (string, error) {
 	return s.handler.GetKey(key)
 }
 
+func (s *StorageHandler) DelUsrSession(cid string) error {
+	key := cid + login_session_format
+
+	return s.handler.DelKey(key)
+}
+
 func (s *StorageHandler) IsExistSession(cid string) (bool, error) {
 	key := cid + login_session_format
 

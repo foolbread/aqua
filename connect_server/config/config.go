@@ -35,6 +35,10 @@ func loadConfig() {
 	val := con.MustInt("server", "id", 0)
 	golog.Info("id:", val)
 	g_config.setConnectId(val)
+
+	strs := con.MustStringSlice("session_storage", "redis_info", nil)
+	golog.Info("redis_info:", strs)
+	g_config.setSessionDBInfos(strs)
 }
 
 func GetConfig() *connectServerConfig {
@@ -48,6 +52,7 @@ type connectServerConfig struct {
 	inner_addr string
 	outer_addr string
 	login_addr string
+	session_db []string
 }
 
 func (c *connectServerConfig) setInnerAddr(a string) {
@@ -66,6 +71,10 @@ func (c *connectServerConfig) setConnectId(id int) {
 	c.id = id
 }
 
+func (c *connectServerConfig) setSessionDBInfos(a []string) {
+	c.session_db = a
+}
+
 func (c *connectServerConfig) GetInnerAddr() string {
 	return c.inner_addr
 }
@@ -80,4 +89,8 @@ func (c *connectServerConfig) GetLoginAddr() string {
 
 func (c *connectServerConfig) GetConnectId() int {
 	return c.id
+}
+
+func (c *connectServerConfig) GetSessionDBInfos() []string {
+	return c.session_db
 }
