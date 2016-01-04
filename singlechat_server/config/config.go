@@ -1,5 +1,5 @@
 //@auther foolbread
-//@time 2015-12-01
+//@time 2016-01-04
 //@file aqua/singlechat_server/config/config.go
 package config
 
@@ -27,6 +27,10 @@ func loadConfig() {
 	strs := c.MustStringSlice("server", "connect_server", nil)
 	golog.Info("connect_server:", strs)
 	g_config.setConnetServer(strs)
+
+	t := c.MustInt("server", "service_type", 0)
+	golog.Info("service_type:", t)
+	g_config.setServiceType(uint32(t))
 }
 
 func GetConfig() *singlechatServerConfig {
@@ -37,6 +41,7 @@ var g_config *singlechatServerConfig
 var config_path string
 
 type singlechatServerConfig struct {
+	service_type   uint32
 	connect_server []string
 }
 
@@ -46,4 +51,12 @@ func (s *singlechatServerConfig) setConnetServer(a []string) {
 
 func (s *singlechatServerConfig) GetConnetServer() []string {
 	return s.connect_server
+}
+
+func (s *singlechatServerConfig) setServiceType(t uint32) {
+	s.service_type = t
+}
+
+func (s *singlechatServerConfig) GetServiceType() uint32 {
+	return s.service_type
 }
