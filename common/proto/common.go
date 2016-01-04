@@ -185,6 +185,30 @@ func UnmarshalLogicRegisterReq(d []byte) (*LogicRegisterReq, error) {
 	return &req, nil
 }
 
+func MarshalLogicRegisterReq(t uint32) ([]byte, error) {
+	var req LogicRegisterReq
+	req.ServiceType = t
+
+	d, err := req.Marshal()
+	if err != nil {
+		return nil, err
+	}
+
+	buf := FillHead(d, LOCREGISTERREQ_CMD)
+
+	return buf, nil
+}
+
+func UnmarshalLogicRegisterRes(d []byte) (*LogicRegisterRes, error) {
+	var res LogicRegisterRes
+	err := res.Unmarshal(d)
+	if err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
 func MarshalLogicRegisterRes(id uint32, s int32) ([]byte, error) {
 	var res LogicRegisterRes
 	res.Status = s
