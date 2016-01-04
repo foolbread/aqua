@@ -66,7 +66,7 @@ func (s *connectServer) register(a string) {
 	}
 
 	var buf [1024]byte
-	l, _, err := anet.RecvPacket(s.con, buf[:])
+	l, _, err := anet.RecvPacketEx(s.con, buf[:], default_timeout)
 	if err != nil {
 		golog.Error(err)
 		s.con.Close()
