@@ -1,6 +1,6 @@
 //@auther foolbread
 //@time 2015-12-01
-//@file aqua/connect_server/server/inner_conn.go
+//@file aqua/connect_server/server/logic_server.go
 package server
 
 import (

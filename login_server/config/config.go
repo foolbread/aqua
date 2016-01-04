@@ -6,16 +6,20 @@ package config
 import (
 	fbconfig "fbcommon/config"
 	"fbcommon/golog"
+	"flag"
 )
 
 func InitConfig() {
 	golog.Info("initing login config......")
+	flag.StringVar(&config_path, "f", "conf.ini", "config file path")
+	flag.Parse()
+
 	g_config = new(loginServerConfig)
 	loadConfig()
 }
 
 func loadConfig() {
-	con, err := fbconfig.LoadConfigByFile("conf.ini")
+	con, err := fbconfig.LoadConfigByFile(config_path)
 	if err != nil {
 		golog.Critical(err)
 	}
@@ -38,6 +42,7 @@ func GetConfig() *loginServerConfig {
 }
 
 var g_config *loginServerConfig
+var config_path string
 
 type loginServerConfig struct {
 	outer_addr string

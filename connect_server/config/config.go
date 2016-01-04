@@ -6,16 +6,20 @@ package config
 import (
 	fbconfig "fbcommon/config"
 	"fbcommon/golog"
+	"flag"
 )
 
 func InitConfig() {
-	golog.Info("initing connect config......")
+	golog.Info("initing connect server config......")
+	flag.StringVar(&config_path, "f", "conf.ini", "config file path")
+	flag.Parse()
+
 	g_config = new(connectServerConfig)
 	loadConfig()
 }
 
 func loadConfig() {
-	con, err := fbconfig.LoadConfigByFile("conf.ini")
+	con, err := fbconfig.LoadConfigByFile(config_path)
 	if err != nil {
 		golog.Critical(err)
 	}
@@ -46,6 +50,7 @@ func GetConfig() *connectServerConfig {
 }
 
 var g_config *connectServerConfig
+var config_path string
 
 type connectServerConfig struct {
 	id         int
