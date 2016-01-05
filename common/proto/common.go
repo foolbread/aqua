@@ -25,16 +25,15 @@ const (
 	CONREGISTERRES_CMD = 6
 	LOCREGISTERREQ_CMD = 7
 	LOCREGISTERRES_CMD = 8
-	SERVICEREQ_CMD     = 9
-	SERVICERES_CMD     = 10
+
+	SINGLECHATREQ_CMD = 1001
+	SINGLECHATRES_CMD = 1002
 )
 
+//peer packet type
 const (
-	SINGLECHATREQ_CMD = 1000
-	SINGLECHATRES_CMD = 1001
-
-	SENDMSGREQ_CMD = 1002
-	SENDMSGRES_CMD = 1003
+	SENDMSGREQ_TYPE = 1
+	SENDMSGRES_TYPE = 2
 )
 
 var KeepAlive []byte = []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x00, 0x00}
@@ -115,7 +114,7 @@ func UnmarshalServiceRes(d []byte) (*ServiceResponse, error) {
 	return &res, nil
 }
 
-func MarshalServiceRes(to []byte, t int32, sn string, s int32, data []byte) ([]byte, error) {
+func MarshalServiceRes(to []byte, t int32, sn string, s int32, data []byte, cmd uint32) ([]byte, error) {
 	var res ServiceResponse
 	res.Token = to
 	res.ServiceType = t
@@ -128,7 +127,7 @@ func MarshalServiceRes(to []byte, t int32, sn string, s int32, data []byte) ([]b
 		return nil, err
 	}
 
-	buf := FillHead(d, SERVICERES_CMD)
+	buf := FillHead(d, cmd)
 
 	return buf, nil
 }
@@ -230,4 +229,38 @@ func MarshalLogicRegisterRes(id uint32, s int32) ([]byte, error) {
 	buf := FillHead(d, LOCREGISTERRES_CMD)
 
 	return buf, nil
+}
+
+func UnmarshalPeerPacket(d []byte) (*PeerPacket, error) {
+	var pg PeerPacket
+	err := pg.Unmarshal(d)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pg, nil
+}
+
+func MarshalPeerPacket() ([]byte, error) {
+	return nil, nil
+}
+
+func UnmarshalPeerMessage(d []byte) (*PeerMessage, error) {
+	var pmsg PeerMessage
+	err := pmsg.Unmarshal(d)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pmsg, nil
+}
+
+func UnmarshalSendPMsgReq(d []byte) (*SendPeerMessageReq, error) {
+	var smsg SendPeerMessageReq
+	err := smsg.Unmarshal(d)
+	if err != nil {
+		return nil, err
+	}
+
+	return &smsg, nil
 }

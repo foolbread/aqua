@@ -75,36 +75,13 @@ func (m *RecvPeerMessageRes) GetMsg() *PeerMessage {
 }
 
 type PeerPacket struct {
-	PacketType     int32               `protobuf:"varint,1,opt,name=packet_type,proto3" json:"packet_type,omitempty"`
-	SendPeerMsgReq *SendPeerMessageReq `protobuf:"bytes,2,opt,name=send_peer_msg_req" json:"send_peer_msg_req,omitempty"`
-	SendPeerMsgRes *SendPeerMessageRes `protobuf:"bytes,3,opt,name=send_peer_msg_res" json:"send_peer_msg_res,omitempty"`
-	RecvPeerMsgRes *RecvPeerMessageRes `protobuf:"bytes,4,opt,name=recv_peer_msg_res" json:"recv_peer_msg_res,omitempty"`
+	PacketType int32  `protobuf:"varint,1,opt,name=packet_type,proto3" json:"packet_type,omitempty"`
+	Data       []byte `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 }
 
 func (m *PeerPacket) Reset()         { *m = PeerPacket{} }
 func (m *PeerPacket) String() string { return proto1.CompactTextString(m) }
 func (*PeerPacket) ProtoMessage()    {}
-
-func (m *PeerPacket) GetSendPeerMsgReq() *SendPeerMessageReq {
-	if m != nil {
-		return m.SendPeerMsgReq
-	}
-	return nil
-}
-
-func (m *PeerPacket) GetSendPeerMsgRes() *SendPeerMessageRes {
-	if m != nil {
-		return m.SendPeerMsgRes
-	}
-	return nil
-}
-
-func (m *PeerPacket) GetRecvPeerMsgRes() *RecvPeerMessageRes {
-	if m != nil {
-		return m.RecvPeerMsgRes
-	}
-	return nil
-}
 
 func init() {
 	proto1.RegisterType((*PeerMessage)(nil), "proto.PeerMessage")
@@ -276,35 +253,13 @@ func (m *PeerPacket) MarshalTo(data []byte) (int, error) {
 		i++
 		i = encodeVarintSinglechat(data, i, uint64(m.PacketType))
 	}
-	if m.SendPeerMsgReq != nil {
-		data[i] = 0x12
-		i++
-		i = encodeVarintSinglechat(data, i, uint64(m.SendPeerMsgReq.Size()))
-		n4, err := m.SendPeerMsgReq.MarshalTo(data[i:])
-		if err != nil {
-			return 0, err
+	if m.Data != nil {
+		if len(m.Data) > 0 {
+			data[i] = 0x12
+			i++
+			i = encodeVarintSinglechat(data, i, uint64(len(m.Data)))
+			i += copy(data[i:], m.Data)
 		}
-		i += n4
-	}
-	if m.SendPeerMsgRes != nil {
-		data[i] = 0x1a
-		i++
-		i = encodeVarintSinglechat(data, i, uint64(m.SendPeerMsgRes.Size()))
-		n5, err := m.SendPeerMsgRes.MarshalTo(data[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n5
-	}
-	if m.RecvPeerMsgRes != nil {
-		data[i] = 0x22
-		i++
-		i = encodeVarintSinglechat(data, i, uint64(m.RecvPeerMsgRes.Size()))
-		n6, err := m.RecvPeerMsgRes.MarshalTo(data[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n6
 	}
 	return i, nil
 }
@@ -405,17 +360,11 @@ func (m *PeerPacket) Size() (n int) {
 	if m.PacketType != 0 {
 		n += 1 + sovSinglechat(uint64(m.PacketType))
 	}
-	if m.SendPeerMsgReq != nil {
-		l = m.SendPeerMsgReq.Size()
-		n += 1 + l + sovSinglechat(uint64(l))
-	}
-	if m.SendPeerMsgRes != nil {
-		l = m.SendPeerMsgRes.Size()
-		n += 1 + l + sovSinglechat(uint64(l))
-	}
-	if m.RecvPeerMsgRes != nil {
-		l = m.RecvPeerMsgRes.Size()
-		n += 1 + l + sovSinglechat(uint64(l))
+	if m.Data != nil {
+		l = len(m.Data)
+		if l > 0 {
+			n += 1 + l + sovSinglechat(uint64(l))
+		}
 	}
 	return n
 }
@@ -954,9 +903,9 @@ func (m *PeerPacket) Unmarshal(data []byte) error {
 			}
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SendPeerMsgReq", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Data", wireType)
 			}
-			var msglen int
+			var byteLen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowSinglechat
@@ -966,90 +915,19 @@ func (m *PeerPacket) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
+				byteLen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if msglen < 0 {
+			if byteLen < 0 {
 				return ErrInvalidLengthSinglechat
 			}
-			postIndex := iNdEx + msglen
+			postIndex := iNdEx + byteLen
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.SendPeerMsgReq == nil {
-				m.SendPeerMsgReq = &SendPeerMessageReq{}
-			}
-			if err := m.SendPeerMsgReq.Unmarshal(data[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SendPeerMsgRes", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowSinglechat
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthSinglechat
-			}
-			postIndex := iNdEx + msglen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.SendPeerMsgRes == nil {
-				m.SendPeerMsgRes = &SendPeerMessageRes{}
-			}
-			if err := m.SendPeerMsgRes.Unmarshal(data[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RecvPeerMsgRes", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowSinglechat
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthSinglechat
-			}
-			postIndex := iNdEx + msglen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.RecvPeerMsgRes == nil {
-				m.RecvPeerMsgRes = &RecvPeerMessageRes{}
-			}
-			if err := m.RecvPeerMsgRes.Unmarshal(data[iNdEx:postIndex]); err != nil {
-				return err
-			}
+			m.Data = append([]byte{}, data[iNdEx:postIndex]...)
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

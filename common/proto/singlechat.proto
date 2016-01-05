@@ -26,7 +26,5 @@ message RecvPeerMessageRes{
 
 message PeerPacket{
 	int32 packet_type = 1;
-	SendPeerMessageReq send_peer_msg_req = 2;
-	SendPeerMessageRes send_peer_msg_res = 3;
-	RecvPeerMessageRes  recv_peer_msg_res = 4;
+	bytes data = 2;
 }
