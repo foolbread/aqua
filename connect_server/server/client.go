@@ -34,7 +34,7 @@ func (s *Client) run() {
 	var ser *logicServer
 
 	for {
-		req, err := s.readRequest(buf[:])
+		req, data, err := s.readRequest(buf[:])
 		if err != nil {
 			golog.Error(err)
 			return
@@ -45,10 +45,15 @@ func (s *Client) run() {
 			golog.Error(aerr.ErrNoLogicSvr)
 			return
 		}
+
+		err = ser.send(data)
+		if err != nil {
+			golog.Error(err)
+		}
 	}
 }
 
-func (s *Client) readRequest(buf []byte) (*aproto.ServiceRequest, error) {
+func (s *Client) readRequest(buf []byte) (*aproto.ServiceRequest, []byte, error) {
 	n, _, err := anet.RecvPacketEx(s.Con, buf, default_timeout)
 	if err != nil {
 		return nil, err
@@ -59,7 +64,7 @@ func (s *Client) readRequest(buf []byte) (*aproto.ServiceRequest, error) {
 		return nil, err
 	}
 
-	return req, nil
+	return req, buf[:n], nil
 }
 
 func (s *Client) sendResponse(d []byte) error {
