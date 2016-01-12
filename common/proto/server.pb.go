@@ -22,6 +22,9 @@
 		PeerMessage
 		SendPeerMessageReq
 		SendPeerMessageRes
+		GetPeerMessageReq
+		GetPeerMessageRes
+		PushPeerMessageReq
 		RecvPeerMessageRes
 		PeerPacket
 */

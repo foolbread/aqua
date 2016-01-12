@@ -20,8 +20,20 @@ message SendPeerMessageRes{
 	PeerMessage msg = 1;
 }
 
-message RecvPeerMessageRes{
+message GetPeerMessageReq{
+	string cid = 1;
+}
+
+message GetPeerMessageRes{
+	repeated PeerMessage msgs = 1;
+}
+
+message PushPeerMessageReq{
 	PeerMessage msg = 1;
+}
+
+message RecvPeerMessageRes{
+	repeated int64 id = 1;//recv message id
 }
 
 message PeerPacket{
