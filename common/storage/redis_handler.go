@@ -4,9 +4,10 @@
 package storage
 
 import (
-	"github.com/mediocregopher/radix.v2/redis"
 	"sync"
 	"time"
+
+	"github.com/mediocregopher/radix.v2/redis"
 )
 
 var connect_timeout time.Duration = 2 * time.Minute
@@ -48,11 +49,8 @@ func (s *RedisHandler) GetKey(key string) (string, error) {
 
 func (s *RedisHandler) DelKey(key string) error {
 	rsp := s.redisCmd("DEL", key)
-	if rsp.Err != nil {
-		return rsp.Err
-	}
 
-	return nil
+	return rsp.Err
 }
 
 func (s *RedisHandler) ExistsKey(key string) (bool, error) {
@@ -63,6 +61,51 @@ func (s *RedisHandler) ExistsKey(key string) (bool, error) {
 
 	v, _ := rsp.Int()
 	return v > 0, nil
+}
+
+//////////////////////////////////////////////////////////////////////////
+func (s *RedisHandler) IncreKey(key string) (int, error) {
+	rsp := s.redisCmd("INCR", key)
+	if rsp.Err != nil {
+		return 0, rsp.Err
+	}
+
+	return rsp.Int()
+}
+
+//////////////////////////////////////////////////////////////////////////
+func (s *RedisHandler) SetHash(key string, field string, value string) error {
+	rsp := s.redisCmd("HSET", key, field, value)
+
+	return rsp.Err
+}
+
+func (s *RedisHandler) GetAllHash(key string) (map[string]string, error) {
+	rsp := s.redisCmd("HGETALL", key)
+	if rsp.Err != nil {
+		return nil, rsp.Err
+	}
+
+	return rsp.Map()
+}
+
+func (s *RedisHandler) DelHash(key string, fields []string) error {
+	var args []string
+	args = append(args, key)
+	args = append(args, fields...)
+
+	rsp := s.redisCmd("HDEL", args)
+
+	return rsp.Err
+}
+
+func (s *RedisHandler) GetHashLen(key string) (int, error) {
+	rsp := s.redisCmd("HLEN", key)
+	if rsp.Err != nil {
+		return 0, rsp.Err
+	}
+
+	return rsp.Int()
 }
 
 //////////////////////////////////////////////////////////////////////////

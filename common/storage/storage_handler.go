@@ -3,7 +3,13 @@
 //@file aqua/common/storage/storage_handler.go
 package storage
 
+import (
+	"strconv"
+)
+
 const login_session_format = "_LOGIN_SESSION"
+const message_id_format = "_MSG_ID"
+const message_format = "_PEER_MSG"
 
 type StorageHandler struct {
 	handler *RedisHandler
@@ -38,4 +44,38 @@ func (s *StorageHandler) IsExistSession(cid string) (bool, error) {
 	key := cid + login_session_format
 
 	return s.handler.ExistsKey(key)
+}
+
+func (s *StorageHandler) IncreMsgId(cid string) (int, error) {
+	key := cid + message_id_format
+
+	return s.handler.IncreKey(key)
+}
+
+func (s *StorageHandler) AddPeerMsg(cid string, msg string, id int) error {
+	key := cid + message_format
+
+	return s.handler.SetHash(key, strconv.Itoa(id), msg)
+}
+
+func (s *StorageHandler) DelPeerMsg(cid string, ids []int) error {
+	key := cid + message_format
+	var fileds []string
+	for k, _ := range ids {
+		fileds = append(fileds, strconv.Itoa(ids[k]))
+	}
+
+	return s.handler.DelHash(key, fileds)
+}
+
+func (s *StorageHandler) GetPeerMsgs(cid string) (map[string]string, error) {
+	key := cid + message_format
+
+	return s.handler.GetAllHash(key)
+}
+
+func (s *StorageHandler) GetPeerMsgsSize(cid string) (int, error) {
+	key := cid + message_format
+
+	return s.handler.GetHashLen(key)
 }
