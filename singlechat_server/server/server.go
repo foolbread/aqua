@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func init() {
+func InitServer() {
 	golog.Info("initing singlechat server ......")
 	g_singlechat = newSinglechatServer()
 	g_conmanager = newConnectManager()
