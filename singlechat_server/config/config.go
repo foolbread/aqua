@@ -9,7 +9,7 @@ import (
 	"flag"
 )
 
-func init() {
+func InitConfig() {
 	golog.Info("initing singlechat server config......")
 	flag.StringVar(&config_path, "f", "conf.ini", "config file path")
 	flag.Parse()

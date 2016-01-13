@@ -4,8 +4,17 @@
 package main
 
 import (
+	"aqua/singlechat_server/config"
+	"aqua/singlechat_server/server"
+	"aqua/singlechat_server/storage"
 	"fmt"
 )
+
+func init() {
+	config.InitConfig()
+	server.InitServer()
+	storage.InitStorageManager()
+}
 
 func main() {
 	fmt.Println("hello")
