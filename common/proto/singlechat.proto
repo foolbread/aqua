@@ -17,7 +17,8 @@ message SendPeerMessageReq{
 }
 
 message SendPeerMessageRes{
-	PeerMessage msg = 1;
+	int32 status = 1;
+	string sn = 2;
 }
 
 message GetPeerMessageReq{

@@ -45,19 +45,13 @@ func (m *SendPeerMessageReq) GetMsg() *PeerMessage {
 }
 
 type SendPeerMessageRes struct {
-	Msg *PeerMessage `protobuf:"bytes,1,opt,name=msg" json:"msg,omitempty"`
+	Status int32  `protobuf:"varint,1,opt,name=status,proto3" json:"status,omitempty"`
+	Sn     string `protobuf:"bytes,2,opt,name=sn,proto3" json:"sn,omitempty"`
 }
 
 func (m *SendPeerMessageRes) Reset()         { *m = SendPeerMessageRes{} }
 func (m *SendPeerMessageRes) String() string { return proto1.CompactTextString(m) }
 func (*SendPeerMessageRes) ProtoMessage()    {}
-
-func (m *SendPeerMessageRes) GetMsg() *PeerMessage {
-	if m != nil {
-		return m.Msg
-	}
-	return nil
-}
 
 type GetPeerMessageReq struct {
 	Cid string `protobuf:"bytes,1,opt,name=cid,proto3" json:"cid,omitempty"`
@@ -226,15 +220,16 @@ func (m *SendPeerMessageRes) MarshalTo(data []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Msg != nil {
-		data[i] = 0xa
+	if m.Status != 0 {
+		data[i] = 0x8
 		i++
-		i = encodeVarintSinglechat(data, i, uint64(m.Msg.Size()))
-		n2, err := m.Msg.MarshalTo(data[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n2
+		i = encodeVarintSinglechat(data, i, uint64(m.Status))
+	}
+	if len(m.Sn) > 0 {
+		data[i] = 0x12
+		i++
+		i = encodeVarintSinglechat(data, i, uint64(len(m.Sn)))
+		i += copy(data[i:], m.Sn)
 	}
 	return i, nil
 }
@@ -312,11 +307,11 @@ func (m *PushPeerMessageReq) MarshalTo(data []byte) (int, error) {
 		data[i] = 0xa
 		i++
 		i = encodeVarintSinglechat(data, i, uint64(m.Msg.Size()))
-		n3, err := m.Msg.MarshalTo(data[i:])
+		n2, err := m.Msg.MarshalTo(data[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n3
+		i += n2
 	}
 	return i, nil
 }
@@ -450,8 +445,11 @@ func (m *SendPeerMessageReq) Size() (n int) {
 func (m *SendPeerMessageRes) Size() (n int) {
 	var l int
 	_ = l
-	if m.Msg != nil {
-		l = m.Msg.Size()
+	if m.Status != 0 {
+		n += 1 + sovSinglechat(uint64(m.Status))
+	}
+	l = len(m.Sn)
+	if l > 0 {
 		n += 1 + l + sovSinglechat(uint64(l))
 	}
 	return n
@@ -863,10 +861,10 @@ func (m *SendPeerMessageRes) Unmarshal(data []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Msg", wireType)
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
 			}
-			var msglen int
+			m.Status = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowSinglechat
@@ -876,24 +874,39 @@ func (m *SendPeerMessageRes) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
+				m.Status |= (int32(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if msglen < 0 {
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Sn", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSinglechat
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthSinglechat
 			}
-			postIndex := iNdEx + msglen
+			postIndex := iNdEx + intStringLen
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.Msg == nil {
-				m.Msg = &PeerMessage{}
-			}
-			if err := m.Msg.Unmarshal(data[iNdEx:postIndex]); err != nil {
-				return err
-			}
+			m.Sn = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
