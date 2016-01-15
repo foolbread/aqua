@@ -26,7 +26,8 @@ message GetPeerMessageReq{
 }
 
 message GetPeerMessageRes{
-	repeated PeerMessage msgs = 1;
+	bool last = 1;
+	repeated PeerMessage msgs = 2;
 }
 
 message PushPeerMessageReq{
