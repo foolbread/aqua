@@ -92,7 +92,8 @@ func (m *PushPeerMessageReq) GetMsg() *PeerMessage {
 }
 
 type RecvPeerMessageRes struct {
-	Id []int64 `protobuf:"varint,1,rep,name=id" json:"id,omitempty"`
+	Cid string  `protobuf:"bytes,1,opt,name=cid,proto3" json:"cid,omitempty"`
+	Id  []int64 `protobuf:"varint,2,rep,name=id" json:"id,omitempty"`
 }
 
 func (m *RecvPeerMessageRes) Reset()         { *m = RecvPeerMessageRes{} }
@@ -331,9 +332,15 @@ func (m *RecvPeerMessageRes) MarshalTo(data []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.Cid) > 0 {
+		data[i] = 0xa
+		i++
+		i = encodeVarintSinglechat(data, i, uint64(len(m.Cid)))
+		i += copy(data[i:], m.Cid)
+	}
 	if len(m.Id) > 0 {
 		for _, num := range m.Id {
-			data[i] = 0x8
+			data[i] = 0x10
 			i++
 			i = encodeVarintSinglechat(data, i, uint64(num))
 		}
@@ -490,6 +497,10 @@ func (m *PushPeerMessageReq) Size() (n int) {
 func (m *RecvPeerMessageRes) Size() (n int) {
 	var l int
 	_ = l
+	l = len(m.Cid)
+	if l > 0 {
+		n += 1 + l + sovSinglechat(uint64(l))
+	}
 	if len(m.Id) > 0 {
 		for _, e := range m.Id {
 			n += 1 + sovSinglechat(uint64(e))
@@ -1202,6 +1213,35 @@ func (m *RecvPeerMessageRes) Unmarshal(data []byte) error {
 		}
 		switch fieldNum {
 		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Cid", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSinglechat
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthSinglechat
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Cid = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
 			}

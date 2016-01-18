@@ -34,7 +34,8 @@ message PushPeerMessageReq{
 }
 
 message RecvPeerMessageRes{
-	repeated int64 id = 1;//recv message id
+	string cid = 1;
+	repeated int64 id = 2;//recv message id
 }
 
 message PeerPacket{
