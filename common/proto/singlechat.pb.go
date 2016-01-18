@@ -62,7 +62,6 @@ func (m *GetPeerMessageReq) String() string { return proto1.CompactTextString(m)
 func (*GetPeerMessageReq) ProtoMessage()    {}
 
 type GetPeerMessageRes struct {
-	Last bool           `protobuf:"varint,1,opt,name=last,proto3" json:"last,omitempty"`
 	Msgs []*PeerMessage `protobuf:"bytes,2,rep,name=msgs" json:"msgs,omitempty"`
 }
 
@@ -274,16 +273,6 @@ func (m *GetPeerMessageRes) MarshalTo(data []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Last {
-		data[i] = 0x8
-		i++
-		if m.Last {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
 	if len(m.Msgs) > 0 {
 		for _, msg := range m.Msgs {
 			data[i] = 0x12
@@ -479,9 +468,6 @@ func (m *GetPeerMessageReq) Size() (n int) {
 func (m *GetPeerMessageRes) Size() (n int) {
 	var l int
 	_ = l
-	if m.Last {
-		n += 2
-	}
 	if len(m.Msgs) > 0 {
 		for _, e := range m.Msgs {
 			l = e.Size()
@@ -1051,26 +1037,6 @@ func (m *GetPeerMessageRes) Unmarshal(data []byte) error {
 			return fmt.Errorf("proto: GetPeerMessageRes: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
-		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Last", wireType)
-			}
-			var v int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowSinglechat
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				v |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			m.Last = bool(v != 0)
 		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Msgs", wireType)
