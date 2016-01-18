@@ -277,6 +277,16 @@ func UnmarshalGetPMsgReq(d []byte) (*GetPeerMessageReq, error) {
 	return &req, nil
 }
 
+func UnmarshalRecvMsgRes(d []byte) (*RecvPeerMessageRes, error) {
+	var res RecvPeerMessageRes
+	err := res.Unmarshal(d)
+	if err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
 func MarshalGetPMsgRes(msgs []*PeerMessage) ([]byte, error) {
 	var res GetPeerMessageRes
 	res.Msgs = msgs
