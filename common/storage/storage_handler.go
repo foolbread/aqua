@@ -58,11 +58,11 @@ func (s *StorageHandler) AddPeerMsg(cid string, msg string, id int) error {
 	return s.handler.SetHash(key, strconv.Itoa(id), msg)
 }
 
-func (s *StorageHandler) DelPeerMsg(cid string, ids []int) error {
+func (s *StorageHandler) DelPeerMsg(cid string, ids []int64) error {
 	key := cid + message_format
 	var fileds []string
 	for k, _ := range ids {
-		fileds = append(fileds, strconv.Itoa(ids[k]))
+		fileds = append(fileds, strconv.Itoa(int(ids[k])))
 	}
 
 	return s.handler.DelHash(key, fileds)

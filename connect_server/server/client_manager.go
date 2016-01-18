@@ -41,6 +41,7 @@ func (s *clientManager) run() {
 
 		if !ok {
 			golog.Error("sn:", pa.sn, "token:", key, "client already exit...")
+			continue
 		}
 
 		cli.sendResponse(pa.data)

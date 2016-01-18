@@ -106,7 +106,7 @@ func (s *connectServer) ReadFromCon() {
 			continue
 		}
 
-		s.handlerPeerCmd(req.Payload)
+		go s.handlerPeerCmd(req)
 	}
 }
 
@@ -114,8 +114,8 @@ func (s *connectServer) SendToCon(d []byte) error {
 	return anet.SendPacket(s.con, d)
 }
 
-func (s *connectServer) handlerPeerCmd(d []byte) {
-	pg, err := aproto.UnmarshalPeerPacket(d)
+func (s *connectServer) handlerPeerCmd(req *aproto.ServiceRequest) {
+	pg, err := aproto.UnmarshalPeerPacket(req.Payload)
 	if err != nil {
 		golog.Error(err)
 		return
@@ -123,6 +123,10 @@ func (s *connectServer) handlerPeerCmd(d []byte) {
 
 	switch pg.PacketType {
 	case aproto.SENDMSGREQ_TYPE:
-		go g_singlechat.handlerSendMsgReq(pg.Data)
+		g_singlechat.handlerSendMsgReq(s, req, pg.Data)
+	case aproto.GETMSGREQ_TYPE:
+		g_singlechat.handlerGetMsgReq(s, req, pg.Data)
+	case aproto.RECVMSGRES_TYPE:
+
 	}
 }
