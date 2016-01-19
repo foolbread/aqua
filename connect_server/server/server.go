@@ -25,7 +25,7 @@ func InitServer() {
 	g_conserver.startListen()
 	g_conserver.startRegister()
 
-	g_logicmanager = new(logicManager)
+	g_logicmanager = newLogicManager()
 	g_logicmanager.startListen()
 
 	keepalive.cmd = aproto.KEEPALIVE_CMD

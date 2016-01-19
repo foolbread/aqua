@@ -56,18 +56,18 @@ func (s *Client) run() {
 func (s *Client) readRequest(buf []byte) (*aproto.ServiceRequest, []byte, error) {
 	n, _, err := anet.RecvPacketEx(s.Con, buf, default_timeout)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	req, err := aproto.UnmarshalServiceReq(buf[aproto.HEAD_LEN:n])
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	return req, buf[:n], nil
 }
 
 func (s *Client) sendResponse(d []byte) error {
-
+	golog.Info("send services res to client:", s.Con.RemoteAddr().String(), "token:", s.TokenStr, "data len:", len(d))
 	return anet.SendPacket(s.Con, d)
 }

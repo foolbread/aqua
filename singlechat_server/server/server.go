@@ -4,6 +4,7 @@
 package server
 
 import (
+	"aqua/singlechat_server/config"
 	"fbcommon/golog"
 	fbtime "fbcommon/time"
 	"time"
@@ -13,6 +14,11 @@ func InitServer() {
 	golog.Info("initing singlechat server ......")
 	g_singlechat = newSinglechatServer()
 	g_conmanager = newConnectManager()
+
+	csvrs := config.GetConfig().GetConnetServer()
+	for _, v := range csvrs {
+		newConnectServer(v)
+	}
 
 	go logic_timer.Start()
 }

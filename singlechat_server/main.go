@@ -7,7 +7,7 @@ import (
 	"aqua/singlechat_server/config"
 	"aqua/singlechat_server/server"
 	"aqua/singlechat_server/storage"
-	"fmt"
+	"runtime"
 )
 
 func init() {
@@ -17,5 +17,6 @@ func init() {
 }
 
 func main() {
-	fmt.Println("hello")
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	select {}
 }

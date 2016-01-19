@@ -5,7 +5,7 @@ package storage
 
 import (
 	astorage "aqua/common/storage"
-	"aqua/connect_server/config"
+	"aqua/singlechat_server/config"
 	"crypto/md5"
 	"fbcommon/golog"
 	"strings"

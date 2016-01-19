@@ -23,6 +23,7 @@ type connectServer struct {
 func newConnectServer(a string) *connectServer {
 	r := new(connectServer)
 	r.addr = a
+
 	go r.register()
 
 	return r
@@ -56,7 +57,7 @@ func (s *connectServer) register() {
 	}
 
 	var buf [1024]byte
-	l, _, err := anet.RecvPacketEx(s.con, buf[:], default_timeout)
+	l, _, err := anet.RecvPacket(s.con, buf[:])
 	if err != nil {
 		golog.Error(err)
 		s.con.Close()
@@ -64,13 +65,14 @@ func (s *connectServer) register() {
 		return
 	}
 
-	res, err := aproto.UnmarshalLogicRegisterRes(buf[:l])
+	res, err := aproto.UnmarshalLogicRegisterRes(buf[aproto.HEAD_LEN:l])
 	if err != nil {
 		golog.Critical(err)
 	}
 
 	s.id = res.Id
 	g_conmanager.addConnectSvr(int(s.id), s)
+	golog.Info("register connect server:", s.addr, "scuccess!")
 
 	go s.keepalive()
 
@@ -80,6 +82,7 @@ func (s *connectServer) register() {
 }
 
 func (s *connectServer) keepalive() {
+	golog.Info(s.addr, "connect server keepalive")
 	err := anet.SendPacket(s.con, aproto.KeepAlive[:])
 	if err != nil {
 		golog.Error(err)
@@ -100,7 +103,7 @@ func (s *connectServer) ReadFromCon() {
 			return
 		}
 
-		req, err := aproto.UnmarshalServiceReq(buf[:l])
+		req, err := aproto.UnmarshalServiceReq(buf[aproto.HEAD_LEN:l])
 		if err != nil {
 			golog.Error(err)
 			continue

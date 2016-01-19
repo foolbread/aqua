@@ -27,8 +27,8 @@ const (
 	LOCREGISTERREQ_CMD = 7
 	LOCREGISTERRES_CMD = 8
 
-	LOGICSERVICEREQ_CMD = 1001
-	LOGICSERVICERES_CMD = 1002
+	LOGICSERVICEREQ_CMD = 9
+	LOGICSERVICERES_CMD = 10
 )
 
 //peer packet type
@@ -62,6 +62,17 @@ func UnmarshalLoginReq(d []byte) (*LoginRequest, error) {
 	}
 
 	return &req, nil
+}
+
+func UnmarshalLoginRes(d []byte) (*LoginResponse, error) {
+	var res LoginResponse
+
+	err := res.Unmarshal(d)
+	if err != nil {
+		return nil, err
+	}
+
+	return &res, nil
 }
 
 func UnmarshalServiceReq(d []byte) (*ServiceRequest, error) {
@@ -127,6 +138,34 @@ func UnmarshalLogicRegisterRes(d []byte) (*LogicRegisterRes, error) {
 	return &res, nil
 }
 
+func UnmarshalRedirectRes(d []byte) (*RedirectResponse, error) {
+	var res RedirectResponse
+
+	err := res.Unmarshal(d)
+	if err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+func MarshalLoginReq(cid string, dt int32, ver string, token []byte) ([]byte, error) {
+	var req LoginRequest
+	req.Cid = cid
+	req.DeviceType = dt
+	req.ClientVersion = ver
+	req.Token = token
+
+	d, err := req.Marshal()
+	if err != nil {
+		return nil, err
+	}
+
+	buf := FillHead(d, LOGINREQ_CMD)
+
+	return buf, nil
+}
+
 func MarshalLoginRes(token []byte, status int32, cid string) ([]byte, error) {
 	var res LoginResponse
 	res.Cid = cid
@@ -160,6 +199,23 @@ func MarshalRedirect(status int, token []byte, addr string) ([]byte, error) {
 	return buf, nil
 }
 
+func MarshalServiceReq(to []byte, t int32, sn string, data []byte) ([]byte, error) {
+	var req ServiceRequest
+	req.Token = to
+	req.ServiceType = t
+	req.Sn = sn
+	req.Payload = data
+
+	d, err := req.Marshal()
+	if err != nil {
+		return nil, err
+	}
+
+	buf := FillHead(d, LOGICSERVICEREQ_CMD)
+
+	return buf, nil
+}
+
 func MarshalServiceRes(to []byte, t int32, sn string, s int32, data []byte) ([]byte, error) {
 	var res ServiceResponse
 	res.Token = to
@@ -173,7 +229,7 @@ func MarshalServiceRes(to []byte, t int32, sn string, s int32, data []byte) ([]b
 		return nil, err
 	}
 
-	buf := FillHead(d, LOCREGISTERRES_CMD)
+	buf := FillHead(d, LOGICSERVICERES_CMD)
 
 	return buf, nil
 }
@@ -287,6 +343,23 @@ func UnmarshalRecvMsgRes(d []byte) (*RecvPeerMessageRes, error) {
 	return &res, nil
 }
 
+func UnmarshalGetPMsgRes(d []byte) (*GetPeerMessageRes, error) {
+	var res GetPeerMessageRes
+	err := res.Unmarshal(d)
+	if err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+func MarshalGetPMsgReq(cid string) ([]byte, error) {
+	var req GetPeerMessageReq
+	req.Cid = cid
+
+	return req.Marshal()
+}
+
 func MarshalGetPMsgRes(msgs []*PeerMessage) ([]byte, error) {
 	var res GetPeerMessageRes
 	res.Msgs = msgs
@@ -300,6 +373,17 @@ func MarshalPeerPacket(t int32, data []byte) ([]byte, error) {
 	pp.Data = data
 
 	return pp.Marshal()
+}
+
+func MarshalSendMsgReq(from string, to string, data []byte) ([]byte, error) {
+	var req SendPeerMessageReq
+	req.Msg = new(PeerMessage)
+	req.Msg.From = from
+	req.Msg.To = to
+	req.Msg.Time = time.Now().Unix()
+	req.Msg.Data = data
+
+	return req.Marshal()
 }
 
 func MarshalSendPMsgRes(status int32, sn string) ([]byte, error) {

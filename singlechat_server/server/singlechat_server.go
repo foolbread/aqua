@@ -42,6 +42,7 @@ func (s *singlechatServer) handlerGetMsgReq(con *connectServer, r *aproto.Servic
 		golog.Error(err)
 		return
 	}
+	golog.Info("handlerGetMsgReq", "cid:", req.Cid)
 
 	hnl := storage.GetStorage().GetSessionHandler(req.Cid)
 
@@ -73,7 +74,12 @@ func (s *singlechatServer) handlerGetMsgReq(con *connectServer, r *aproto.Servic
 
 		if cnt >= MESSAGES_MAX {
 			cnt = 0
-			data, err := aproto.MarshalGetPMsgRes(ms[:])
+			dd, err := aproto.MarshalGetPMsgRes(ms[:])
+			if err != nil {
+				golog.Error(err)
+				continue
+			}
+			data, err := aproto.MarshalPeerPacket(aproto.GETMSGRES_TYPE, dd)
 			if err != nil {
 				golog.Error(err)
 				continue
@@ -83,7 +89,12 @@ func (s *singlechatServer) handlerGetMsgReq(con *connectServer, r *aproto.Servic
 	} //end for
 
 	if cnt > 0 {
-		data, err := aproto.MarshalGetPMsgRes(ms[:])
+		dd, err := aproto.MarshalGetPMsgRes(ms[:cnt])
+		if err != nil {
+			golog.Error(err)
+			return
+		}
+		data, err := aproto.MarshalPeerPacket(aproto.GETMSGRES_TYPE, dd)
 		if err != nil {
 			golog.Error(err)
 			return

@@ -57,7 +57,7 @@ func (s *logicServer) run() {
 		}
 
 		switch pa.cmd {
-		case aproto.SERVICERES_CMD:
+		case aproto.LOGICSERVICERES_CMD:
 			g_logicmanager.handlerLogicRes(pa)
 		case aproto.KEEPALIVE_CMD:
 			s.alive.Set(true)
@@ -72,7 +72,7 @@ func (s *logicServer) read(buf []byte) (*logicPacket, error) {
 	}
 
 	switch cmd {
-	case aproto.SERVICERES_CMD:
+	case aproto.LOGICSERVICERES_CMD:
 		req, err := aproto.UnmarshalServiceReq(buf[aproto.HEAD_LEN:n])
 		if err != nil {
 			return nil, err

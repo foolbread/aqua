@@ -76,12 +76,12 @@ func (s *logicManager) handlerLogicCon(c net.Conn) {
 func (s *logicManager) handlerLogicLogin(c net.Conn) (*logicServer, error) {
 	var buf [1024]byte
 	//request
-	n, _, err := anet.RecvPacketEx(c, buf[:], default_timeout)
+	n, _, err := anet.RecvPacket(c, buf[:])
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := aproto.UnmarshalLogicRegisterReq(buf[:n])
+	req, err := aproto.UnmarshalLogicRegisterReq(buf[aproto.HEAD_LEN:n])
 	if err != nil {
 		return nil, err
 	}
@@ -98,11 +98,14 @@ func (s *logicManager) handlerLogicLogin(c net.Conn) (*logicServer, error) {
 	}
 
 	//register
-	l := newLogicServer(int(req.ServiceType), c)
+	st := int(req.ServiceType)
+	l := newLogicServer(st, c)
+	golog.Info("logic_server register:", c.RemoteAddr().String(), "service_type:", st)
 
 	s.lo.Lock()
-	val := s.mserver[int(req.ServiceType)]
+	val := s.mserver[st]
 	val = append(val, l)
+	s.mserver[st] = val
 	s.lo.Unlock()
 
 	return l, nil
