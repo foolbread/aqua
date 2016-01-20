@@ -7,6 +7,7 @@ import (
 	"aqua/connect_server/config"
 	"aqua/connect_server/server"
 	"aqua/connect_server/storage"
+	"runtime"
 )
 
 func init() {
@@ -16,5 +17,6 @@ func init() {
 }
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	select {}
 }
