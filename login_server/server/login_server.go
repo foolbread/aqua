@@ -10,10 +10,11 @@ import (
 	"aqua/login_server/storage"
 	"container/list"
 	"crypto/md5"
-	"fbcommon/golog"
 	"fmt"
 	"net"
 	"sync"
+
+	"github.com/foolbread/fbcommon/golog"
 )
 
 var session_format string = "%02X_%d"

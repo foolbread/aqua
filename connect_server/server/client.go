@@ -7,9 +7,10 @@ import (
 	aerr "aqua/common/error"
 	anet "aqua/common/net"
 	aproto "aqua/common/proto"
-	"fbcommon/golog"
 	"fmt"
 	"net"
+
+	"github.com/foolbread/fbcommon/golog"
 )
 
 type Client struct {

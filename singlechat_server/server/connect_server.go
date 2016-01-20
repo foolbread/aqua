@@ -7,9 +7,10 @@ import (
 	anet "aqua/common/net"
 	aproto "aqua/common/proto"
 	"aqua/singlechat_server/config"
-	"fbcommon/golog"
 	"net"
 	"time"
+
+	"github.com/foolbread/fbcommon/golog"
 )
 
 var keepalive_time time.Duration = 10 * time.Second

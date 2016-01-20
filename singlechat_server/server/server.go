@@ -5,9 +5,11 @@ package server
 
 import (
 	"aqua/singlechat_server/config"
-	"fbcommon/golog"
-	fbtime "fbcommon/time"
 	"time"
+
+	"github.com/foolbread/fbcommon/golog"
+
+	fbtime "github.com/foolbread/fbcommon/time"
 )
 
 func InitServer() {

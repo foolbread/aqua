@@ -7,7 +7,8 @@ import (
 	aproto "aqua/common/proto"
 	"aqua/singlechat_server/storage"
 	"encoding/base64"
-	"fbcommon/golog"
+
+	"github.com/foolbread/fbcommon/golog"
 )
 
 const MESSAGES_MAX = 10

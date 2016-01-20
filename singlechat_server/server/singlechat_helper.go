@@ -9,9 +9,10 @@ import (
 	astorage "aqua/common/storage"
 	"aqua/singlechat_server/config"
 	"encoding/hex"
-	"fbcommon/golog"
 	"strconv"
 	"strings"
+
+	"github.com/foolbread/fbcommon/golog"
 )
 
 func SendServiceMsg(con *connectServer, r *aproto.ServiceRequest, pp []byte) {

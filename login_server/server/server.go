@@ -4,9 +4,11 @@
 package server
 
 import (
-	"fbcommon/golog"
-	fbtime "fbcommon/time"
 	"time"
+
+	"github.com/foolbread/fbcommon/golog"
+
+	fbtime "github.com/foolbread/fbcommon/time"
 )
 
 func InitServer() {

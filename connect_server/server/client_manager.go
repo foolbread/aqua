@@ -4,9 +4,10 @@
 package server
 
 import (
-	"fbcommon/golog"
 	"fmt"
 	"sync"
+
+	"github.com/foolbread/fbcommon/golog"
 )
 
 type clientManager struct {

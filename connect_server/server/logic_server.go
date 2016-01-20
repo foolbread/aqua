@@ -7,11 +7,13 @@ import (
 	aerr "aqua/common/error"
 	anet "aqua/common/net"
 	aproto "aqua/common/proto"
-	fbatomic "fbcommon/atomic"
-	"fbcommon/golog"
-	fbtime "fbcommon/time"
 	"net"
 	"time"
+
+	"github.com/foolbread/fbcommon/golog"
+
+	fbatomic "github.com/foolbread/fbcommon/atomic"
+	fbtime "github.com/foolbread/fbcommon/time"
 )
 
 var connect_timer *fbtime.Timer = fbtime.New(1 * time.Second)

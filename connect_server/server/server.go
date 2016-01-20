@@ -6,8 +6,9 @@ package server
 import (
 	aproto "aqua/common/proto"
 	"aqua/connect_server/config"
-	"fbcommon/golog"
 	"time"
+
+	"github.com/foolbread/fbcommon/golog"
 )
 
 const ARRARY_LEN = 255

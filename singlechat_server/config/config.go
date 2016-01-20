@@ -4,9 +4,11 @@
 package config
 
 import (
-	fbconfig "fbcommon/config"
-	"fbcommon/golog"
 	"flag"
+
+	"github.com/foolbread/fbcommon/golog"
+
+	fbconfig "github.com/foolbread/fbcommon/config"
 )
 
 func InitConfig() {

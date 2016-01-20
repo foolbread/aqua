@@ -4,8 +4,9 @@
 package server
 
 import (
-	"fbcommon/golog"
 	"sync"
+
+	"github.com/foolbread/fbcommon/golog"
 )
 
 type connectManager struct {

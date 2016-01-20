@@ -6,9 +6,10 @@ package net
 import (
 	aerror "aqua/common/error"
 	aproto "aqua/common/proto"
-	fbnet "fbcommon/net"
 	"net"
 	"time"
+
+	fbnet "github.com/foolbread/fbcommon/net"
 )
 
 func RecvPacket(c net.Conn, d []byte) (uint32, uint32, error) {

@@ -7,8 +7,9 @@ import (
 	astorage "aqua/common/storage"
 	"aqua/singlechat_server/config"
 	"crypto/md5"
-	"fbcommon/golog"
 	"strings"
+
+	"github.com/foolbread/fbcommon/golog"
 )
 
 const default_count = 5

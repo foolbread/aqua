@@ -7,9 +7,10 @@ import (
 	anet "aqua/common/net"
 	aproto "aqua/common/proto"
 	"aqua/connect_server/config"
-	"fbcommon/golog"
 	"net"
 	"sync"
+
+	"github.com/foolbread/fbcommon/golog"
 )
 
 type logicManager struct {

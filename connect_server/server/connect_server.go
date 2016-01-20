@@ -9,11 +9,12 @@ import (
 	aproto "aqua/common/proto"
 	"aqua/connect_server/config"
 	"aqua/connect_server/storage"
-	"fbcommon/golog"
 	"fmt"
 	"net"
 	"strings"
 	"time"
+
+	"github.com/foolbread/fbcommon/golog"
 )
 
 const keyformat string = "%02X"

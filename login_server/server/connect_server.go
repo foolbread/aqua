@@ -7,10 +7,12 @@ import (
 	aerr "aqua/common/error"
 	anet "aqua/common/net"
 	aproto "aqua/common/proto"
-	fbatomic "fbcommon/atomic"
-	"fbcommon/golog"
 	"net"
 	"time"
+
+	"github.com/foolbread/fbcommon/golog"
+
+	fbatomic "github.com/foolbread/fbcommon/atomic"
 )
 
 var check_time time.Duration = 15 * time.Second
