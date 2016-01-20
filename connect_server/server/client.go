@@ -57,7 +57,7 @@ func (s *Client) run() {
 }
 
 func (s *Client) readData(buf []byte) (*aproto.ServiceRequest, []byte, error) {
-	n, _, err := anet.RecvPacketEx(s.Con, buf, default_timeout)
+	n, _, err := anet.RecvPacket(s.Con, buf)
 	if err != nil {
 		return nil, nil, err
 	}
