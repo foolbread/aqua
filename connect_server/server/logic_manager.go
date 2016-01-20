@@ -35,7 +35,7 @@ func (s *logicManager) getServer(t int, key []byte) *logicServer {
 	var ret *logicServer
 	s.lo.RLock()
 	v, ok := s.mserver[t]
-	if ok {
+	if ok && len(v) > 0 {
 		ret = v[int(key[0])%len(v)]
 	}
 	s.lo.RUnlock()
@@ -111,8 +111,8 @@ func (s *logicManager) handlerLogicLogin(c net.Conn) (*logicServer, error) {
 	return l, nil
 }
 
-func (s *logicManager) handlerLogicRes(pa *logicPacket) {
-	g_conserver.handlerClientRes(pa)
+func (s *logicManager) handlerLogicToClient(pa *logicPacket) {
+	g_conserver.handlerClientToClient(pa)
 }
 
 func (s *logicManager) exitServer(t int, a string) {

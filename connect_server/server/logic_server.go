@@ -44,11 +44,10 @@ func newLogicServer(t int, c net.Conn) *logicServer {
 }
 
 func (s *logicServer) run() {
-	var buf [4096]byte
-
 	connect_timer.NewTimer(checkalive_time, s.checkKeepalive)
 
 	for {
+		var buf [4096]byte
 		pa, err := s.read(buf[:])
 		if err != nil {
 			golog.Error(err)
@@ -58,7 +57,7 @@ func (s *logicServer) run() {
 
 		switch pa.cmd {
 		case aproto.LOGICSERVICERES_CMD:
-			g_logicmanager.handlerLogicRes(pa)
+			g_logicmanager.handlerLogicToClient(pa)
 		case aproto.KEEPALIVE_CMD:
 			s.alive.Set(true)
 		}
@@ -73,12 +72,13 @@ func (s *logicServer) read(buf []byte) (*logicPacket, error) {
 
 	switch cmd {
 	case aproto.LOGICSERVICERES_CMD:
-		req, err := aproto.UnmarshalServiceReq(buf[aproto.HEAD_LEN:n])
+		golog.Info("recv services from [logicserver]:", s.Addr, "[service_type]:", s.Service_type, "[data_len]:", n)
+		res, err := aproto.UnmarshalServiceRes(buf[aproto.HEAD_LEN:n])
 		if err != nil {
 			return nil, err
 		}
 
-		return &logicPacket{req.Token, cmd, req.Sn, buf[:n]}, nil
+		return &logicPacket{res.Token, cmd, res.Sn, buf[:n]}, nil
 	case aproto.KEEPALIVE_CMD:
 		return &keepalive, nil
 	}

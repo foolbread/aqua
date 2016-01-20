@@ -27,7 +27,7 @@ func SendServiceMsg(con *connectServer, r *aproto.ServiceRequest, pp []byte) {
 		return
 	}
 
-	golog.Info("send service res to connect:", con.addr, "id:", con.id, "token:", hex.EncodeToString(r.Token), "data len:", len(data))
+	golog.Info("send service res to [connect_server]:", con.addr, "[id]:", con.id, "[token]:", strings.ToUpper(hex.EncodeToString(r.Token)), "[data_len]:", len(data))
 }
 
 func SendPushMsgToUsr(r *aproto.ServiceRequest, rq *aproto.SendPeerMessageReq, handler *astorage.StorageHandler) {
@@ -69,10 +69,12 @@ func SendPushMsgToUsr(r *aproto.ServiceRequest, rq *aproto.SendPeerMessageReq, h
 	}
 
 	csvr := g_conmanager.getConnectSvr(id)
+
 	if csvr != nil {
 		err := csvr.SendToCon(data)
 		if err != nil {
 			golog.Error(err)
 		}
+		golog.Info("Send Push Msg to [cid]:", rq.Msg.To, "[token]:", session[:idx], "[connect_id]:", id, "[data_len]:", len(data))
 	}
 }

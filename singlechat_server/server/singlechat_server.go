@@ -27,6 +27,7 @@ func (s *singlechatServer) handlerRecvMsgRes(con *connectServer, r *aproto.Servi
 		golog.Error(err)
 		return
 	}
+	golog.Info("handlerRecvMsgRes", "cid:", req.Cid)
 
 	hnl := storage.GetStorage().GetSessionHandler(req.Cid)
 
@@ -109,6 +110,8 @@ func (s *singlechatServer) handlerSendMsgReq(con *connectServer, r *aproto.Servi
 		golog.Error(err)
 		return
 	}
+
+	golog.Info("handlerSendMsgReq", "from:", req.Msg.From, "to:", req.Msg.To)
 
 	hnl := storage.GetStorage().GetSessionHandler(req.Msg.To)
 	//判断接收方是否在线

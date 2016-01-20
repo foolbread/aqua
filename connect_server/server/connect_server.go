@@ -205,7 +205,7 @@ func (s *connectServer) checkSession(token string, session string) bool {
 	return strings.EqualFold(token, session[:pos])
 }
 
-func (s *connectServer) handlerClientRes(pa *logicPacket) {
+func (s *connectServer) handlerClientToClient(pa *logicPacket) {
 	clis := s.clients[pa.token[0]%ARRARY_LEN]
 
 	clis.pushResponse(pa)

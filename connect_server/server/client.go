@@ -34,11 +34,13 @@ func (s *Client) run() {
 	var ser *logicServer
 
 	for {
-		req, data, err := s.readRequest(buf[:])
+		req, data, err := s.readData(buf[:])
 		if err != nil {
 			golog.Error(err)
 			return
 		}
+
+		golog.Info("recv services from client:", s.Con.RemoteAddr().String(), "data_len:", len(data))
 
 		ser = g_logicmanager.getServer(int(req.ServiceType), s.Token)
 		if ser == nil {
@@ -53,7 +55,7 @@ func (s *Client) run() {
 	}
 }
 
-func (s *Client) readRequest(buf []byte) (*aproto.ServiceRequest, []byte, error) {
+func (s *Client) readData(buf []byte) (*aproto.ServiceRequest, []byte, error) {
 	n, _, err := anet.RecvPacketEx(s.Con, buf, default_timeout)
 	if err != nil {
 		return nil, nil, err
@@ -67,7 +69,7 @@ func (s *Client) readRequest(buf []byte) (*aproto.ServiceRequest, []byte, error)
 	return req, buf[:n], nil
 }
 
-func (s *Client) sendResponse(d []byte) error {
-	golog.Info("send services res to client:", s.Con.RemoteAddr().String(), "token:", s.TokenStr, "data len:", len(d))
+func (s *Client) sendData(d []byte) error {
+	golog.Info("send services  to [client]:", s.Con.RemoteAddr().String(), "[token]:", s.TokenStr, "[data_len]:", len(d))
 	return anet.SendPacket(s.Con, d)
 }

@@ -353,6 +353,24 @@ func UnmarshalGetPMsgRes(d []byte) (*GetPeerMessageRes, error) {
 	return &res, nil
 }
 
+func UnmarshalPushMsgReq(d []byte) (*PushPeerMessageReq, error) {
+	var req PushPeerMessageReq
+	err := req.Unmarshal(d)
+	if err != nil {
+		return nil, err
+	}
+
+	return &req, nil
+}
+
+func MarshalRecvMsgRes(cid string, ids []int64) ([]byte, error) {
+	var res RecvPeerMessageRes
+	res.Cid = cid
+	res.Id = ids
+
+	return res.Marshal()
+}
+
 func MarshalGetPMsgReq(cid string) ([]byte, error) {
 	var req GetPeerMessageReq
 	req.Cid = cid

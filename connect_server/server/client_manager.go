@@ -44,7 +44,7 @@ func (s *clientManager) run() {
 			continue
 		}
 
-		cli.sendResponse(pa.data)
+		cli.sendData(pa.data)
 	}
 }
 
