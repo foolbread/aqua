@@ -5,10 +5,12 @@ package main
 
 import (
 	"aqua/relation_server/config"
+	"aqua/relation_server/storage"
 )
 
 func init() {
 	config.InitConfig()
+	storage.InitStorageManager()
 }
 
 func main() {
