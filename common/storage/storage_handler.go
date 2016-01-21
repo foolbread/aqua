@@ -5,6 +5,9 @@ package storage
 
 import (
 	"strconv"
+	"strings"
+
+	"github.com/foolbread/fbcommon/golog"
 )
 
 const login_session_format = "_LOGIN_SESSION"
@@ -15,12 +18,28 @@ type StorageHandler struct {
 	handler *RedisHandler
 }
 
-func NewStorageHandler(h *RedisHandler) *StorageHandler {
+func NewStorageHandler(info string) *StorageHandler {
+	r := new(StorageHandler)
+
+	var err error
+	idx := strings.LastIndex(info, ":")
+	addr := info[:idx]
+	pwd := info[idx+1:]
+	r.handler, err = NewRedisHandler(addr, pwd)
+	if err != nil {
+		golog.Error(err)
+		return nil
+	}
+
+	return r
+}
+
+/*func NewStorageHandler(h *RedisHandler) *StorageHandler {
 	r := new(StorageHandler)
 	r.handler = h
 
 	return r
-}
+}*/
 
 func (s *StorageHandler) SetUsrSession(cid string, session string) error {
 	key := cid + login_session_format
