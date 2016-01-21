@@ -51,6 +51,7 @@ type storageManager struct {
 func newStorageManager() *storageManager {
 	ret := new(storageManager)
 	ret.session_storages = make([][]*astorage.StorageHandler, len(config.GetConfig().GetSessionDBInfos()))
+	ret.singlechat_storages = make([][]*astorage.StorageHandler, len(config.GetConfig().GetSinglechatDBInfos()))
 
 	return ret
 }
