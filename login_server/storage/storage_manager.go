@@ -6,8 +6,6 @@ package storage
 import (
 	astorage "aqua/common/storage"
 	"aqua/login_server/config"
-	"crypto/md5"
-	"strings"
 
 	"github.com/foolbread/fbcommon/golog"
 )
@@ -18,18 +16,13 @@ func InitStorageManager() {
 	golog.Info("initing login storage manager...")
 	g_storage = newStorageManager()
 
-	info := config.GetConfig().GetSessionDBInfos()
-	for k, v := range info {
-		idx := strings.LastIndex(v, ":")
-		addr := v[:idx]
-		pwd := v[idx+1:]
-		golog.Info("addr:", addr, "pwd:", pwd)
+	infos := config.GetConfig().GetSessionDBInfos()
+	for k, v := range infos {
 		for i := 0; i < default_count; i++ {
-			handler, err := astorage.NewRedisHandler(addr, pwd)
-			if err != nil {
-				golog.Critical(err)
+			hnl := astorage.NewStorageHandler(v)
+			if hnl != nil {
+				g_storage.session_storages[k] = append(g_storage.session_storages[k], hnl)
 			}
-			g_storage.session_storages[k] = append(g_storage.session_storages[k], astorage.NewStorageHandler(handler))
 		}
 	}
 
@@ -53,7 +46,7 @@ func newStorageManager() *storageManager {
 }
 
 func (s *storageManager) GetSessionHandler(cid string) *astorage.StorageHandler {
-	k := md5.Sum([]byte(cid))
-	as := s.session_storages[int(k[0])%len(s.session_storages)]
-	return as[int(k[0])%len(as)]
+	by := astorage.Md5ToByte(cid)
+	as := s.session_storages[int(by)%len(s.session_storages)]
+	return as[int(by)%len(as)]
 }
