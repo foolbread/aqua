@@ -6,8 +6,8 @@ package server
 import (
 	aerr "aqua/common/error"
 	aproto "aqua/common/proto"
-	astorage "aqua/common/storage"
 	"aqua/singlechat_server/config"
+	"aqua/singlechat_server/storage"
 	"encoding/hex"
 	"strconv"
 	"strings"
@@ -31,9 +31,10 @@ func SendServiceMsg(con *connectServer, r *aproto.ServiceRequest, pp []byte) {
 	golog.Info("send service res to [connect_server]:", con.addr, "[id]:", con.id, "[token]:", strings.ToUpper(hex.EncodeToString(r.Token)), "[data_len]:", len(data))
 }
 
-func SendPushMsgToUsr(r *aproto.ServiceRequest, rq *aproto.SendPeerMessageReq, handler *astorage.StorageHandler) {
+func SendPushMsgToUsr(r *aproto.ServiceRequest, rq *aproto.SendPeerMessageReq) {
+	hnl := storage.GetStorage().GetSessionHandler(rq.Msg.To)
 	//get usr session
-	session, err := handler.GetUsrSession(rq.Msg.To)
+	session, err := hnl.GetUsrSession(rq.Msg.To)
 	if err != nil {
 		golog.Error(err)
 		return

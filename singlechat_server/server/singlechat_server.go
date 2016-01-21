@@ -30,7 +30,7 @@ func (s *singlechatServer) handlerRecvMsgRes(con *connectServer, r *aproto.Servi
 	}
 	golog.Info("handlerRecvMsgRes", "cid:", req.Cid)
 
-	hnl := storage.GetStorage().GetSessionHandler(req.Cid)
+	hnl := storage.GetStorage().GetSingleHandler(req.Cid)
 
 	err = hnl.DelPeerMsg(req.Cid, req.Id)
 	if err != nil {
@@ -46,7 +46,7 @@ func (s *singlechatServer) handlerGetMsgReq(con *connectServer, r *aproto.Servic
 	}
 	golog.Info("handlerGetMsgReq", "cid:", req.Cid)
 
-	hnl := storage.GetStorage().GetSessionHandler(req.Cid)
+	hnl := storage.GetStorage().GetSingleHandler(req.Cid)
 
 	//获取用户离线消息
 	msgs, err := hnl.GetPeerMsgs(req.Cid)
@@ -114,7 +114,7 @@ func (s *singlechatServer) handlerSendMsgReq(con *connectServer, r *aproto.Servi
 
 	golog.Info("handlerSendMsgReq", "from:", req.Msg.From, "to:", req.Msg.To)
 
-	hnl := storage.GetStorage().GetSessionHandler(req.Msg.To)
+	hnl := storage.GetStorage().GetSingleHandler(req.Msg.To)
 	//判断接收方是否在线
 	exist, err := hnl.IsExistSession(req.Msg.To)
 	if err != nil {
@@ -165,7 +165,7 @@ func (s *singlechatServer) handlerSendMsgReq(con *connectServer, r *aproto.Servi
 	hnl.AddPeerMsg(req.Msg.To, base64.StdEncoding.EncodeToString(msg), id)
 
 	if exist {
-		SendPushMsgToUsr(r, req, hnl)
+		SendPushMsgToUsr(r, req)
 	}
 
 	d, err = aproto.MarshalSendPMsgRes(aproto.STATUS_OK, req.Msg.Sn)

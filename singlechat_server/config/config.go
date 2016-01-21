@@ -37,6 +37,10 @@ func loadConfig() {
 	strs = c.MustStringSlice("session_storage", "redis_info", nil)
 	golog.Info("session_storage:", strs)
 	g_config.setSessionDBInfos(strs)
+
+	strs = c.MustStringSlice("singlechat_storage", "redis_info", nil)
+	golog.Info("singlechat_storage", strs)
+	g_config.setSinglechatDBInfos(strs)
 }
 
 func GetConfig() *singlechatServerConfig {
@@ -50,6 +54,7 @@ type singlechatServerConfig struct {
 	service_type   uint32
 	connect_server []string
 	session_db     []string
+	singlechat_db  []string
 }
 
 func (s *singlechatServerConfig) setConnetServer(a []string) {
@@ -74,4 +79,12 @@ func (s *singlechatServerConfig) setSessionDBInfos(a []string) {
 
 func (s *singlechatServerConfig) GetSessionDBInfos() []string {
 	return s.session_db
+}
+
+func (s *singlechatServerConfig) setSinglechatDBInfos(a []string) {
+	s.singlechat_db = a
+}
+
+func (s *singlechatServerConfig) GetSinglechatDBInfos() []string {
+	return s.singlechat_db
 }
