@@ -2,32 +2,6 @@
 // source: server.proto
 // DO NOT EDIT!
 
-/*
-	Package proto is a generated protocol buffer package.
-
-	It is generated from these files:
-		server.proto
-		singlechat.proto
-
-	It has these top-level messages:
-		LoginRequest
-		LoginResponse
-		RedirectResponse
-		ConnectRegisterReq
-		ConnectRegisterRes
-		LogicRegisterReq
-		LogicRegisterRes
-		ServiceRequest
-		ServiceResponse
-		PeerMessage
-		SendPeerMessageReq
-		SendPeerMessageRes
-		GetPeerMessageReq
-		GetPeerMessageRes
-		PushPeerMessageReq
-		RecvPeerMessageRes
-		PeerPacket
-*/
 package proto
 
 import proto1 "github.com/golang/protobuf/proto"

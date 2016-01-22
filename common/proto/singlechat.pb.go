@@ -62,7 +62,7 @@ func (m *GetPeerMessageReq) String() string { return proto1.CompactTextString(m)
 func (*GetPeerMessageReq) ProtoMessage()    {}
 
 type GetPeerMessageRes struct {
-	Msgs []*PeerMessage `protobuf:"bytes,2,rep,name=msgs" json:"msgs,omitempty"`
+	Msgs []*PeerMessage `protobuf:"bytes,1,rep,name=msgs" json:"msgs,omitempty"`
 }
 
 func (m *GetPeerMessageRes) Reset()         { *m = GetPeerMessageRes{} }
@@ -276,7 +276,7 @@ func (m *GetPeerMessageRes) MarshalTo(data []byte) (int, error) {
 	_ = l
 	if len(m.Msgs) > 0 {
 		for _, msg := range m.Msgs {
-			data[i] = 0x12
+			data[i] = 0xa
 			i++
 			i = encodeVarintSinglechat(data, i, uint64(msg.Size()))
 			n, err := msg.MarshalTo(data[i:])
@@ -1048,7 +1048,7 @@ func (m *GetPeerMessageRes) Unmarshal(data []byte) error {
 			return fmt.Errorf("proto: GetPeerMessageRes: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
-		case 2:
+		case 1:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Msgs", wireType)
 			}
