@@ -28,6 +28,28 @@ func NewRedisHandler(ser string, pwd string) (*RedisHandler, error) {
 	return ret, ret.connect()
 }
 
+//////////////////////////////////////////////////////////////////////////
+func (s *RedisHandler) AddSet(set, key string) error {
+	rsp := s.redisCmd("SADD", set, key)
+	return rsp.Err
+}
+
+func (s *RedisHandler) DelSet(set, key string) error {
+	rsp := s.redisCmd("SMOVE", set, key)
+	return rsp.Err
+}
+
+func (s *RedisHandler) SismemberSet(set, key string) (bool, error) {
+	rsp := s.redisCmd("SISMEMBER", set, key)
+	if rsp.Err != nil {
+		return false, rsp.Err
+	}
+
+	v, _ := rsp.Int()
+	return v > 0, nil
+}
+
+//////////////////////////////////////////////////////////////////////////
 func (s *RedisHandler) AppendKey(key, value string) error {
 	rsp := s.redisCmd("APPEND", key, value)
 	return rsp.Err

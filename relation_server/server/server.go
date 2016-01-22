@@ -19,6 +19,7 @@ func InitServer() {
 	go logic_timer.Start()
 }
 
+var logic_timer *fbtime.Timer = fbtime.New(1 * time.Second)
+
 var g_conmanager *connectManager
 var g_relation *relationServer
-var logic_timer *fbtime.Timer = fbtime.New(1 * time.Second)
