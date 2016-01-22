@@ -33,12 +33,27 @@ const (
 
 //peer packet type
 const (
-	SENDMSGREQ_TYPE = 1
-	SENDMSGRES_TYPE = 2
-	GETMSGREQ_TYPE  = 3
-	GETMSGRES_TYPE  = 4
-	PUSHMSGREQ_TYPE = 5
-	RECVMSGRES_TYPE = 6
+	SENDMSGREQ_TYPE = iota + 1
+	SENDMSGRES_TYPE
+	GETMSGREQ_TYPE
+	GETMSGRES_TYPE
+	PUSHMSGREQ_TYPE
+	RECVMSGRES_TYPE
+)
+
+//relation packet type
+const (
+	ADDFRIENDREQ_TYPE = iota + 1
+	ADDFRIENDRES_TYPE
+	DELFRIENDREQ_TYPE
+	DELFRIEDNRES_TYPE
+	ADDBLACKREQ_TYPE
+	ADDBLACKRES_TYPE
+	DELBLACKREQ_TYPE
+	DELBLACKRES_TYPE
+	GETSYSMSGREQ_TYPE
+	GETSYSMSGRES_TYPE
+	RECVSYSMSGRES_TYPE
 )
 
 var KeepAlive []byte = []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x00, 0x00}
@@ -418,5 +433,7 @@ func MarshalPushPMsgReq(msg *PeerMessage) ([]byte, error) {
 
 	return pmsg.Marshal()
 }
+
+////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////
