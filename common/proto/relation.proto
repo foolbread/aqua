@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package proto;
+
+message RelationPacket {
+	int32 packet_type = 1;
+	bytes data = 2;
+}
+
+message AddFriendReq{
+	int64 id = 1; //mssage id, did not set this field when send message
+	string from = 2;
+	string friend = 3;
+	bytes data = 4;
+}
+
+message AddFriendRes{
+	int64 id = 1; //mssage id, did not set this field when send message
+	string from = 2;
+	string friend = 3;
+	int32 status = 4;
+}
+
+message AddBlackReq{
+	string from = 2;
+	string black = 3;
+}
+
+message AddBlackRes{
+	int64 id = 1; 
+	string from =2;
+	string black = 3;
+	int32 status = 4;
+}
+
+message DelBlackReq{
+	string from = 1;
+	string black = 2;
+}
+
+message DelBlackRes{
+	int64 id = 1; 
+	string from = 2;
+	string black = 3;
+	int32 status = 4;
+}
+
+message RecvRelationPacket{
+	string cid = 1;
+	repeated int64 id = 2;
+}
