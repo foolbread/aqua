@@ -15,7 +15,19 @@ message AddFriendReq{
 }
 
 message AddFriendRes{
-	int64 id = 1; //mssage id, did not set this field when send message
+	int64 id = 1; 
+	string from = 2;
+	string friend = 3;
+	int32 status = 4;
+}
+
+message DelFriendReq{
+	string from = 2;
+	string friend = 3;
+}
+
+message DelFriendRes{
+	int64 id = 1; 
 	string from = 2;
 	string friend = 3;
 	int32 status = 4;
