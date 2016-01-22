@@ -34,13 +34,6 @@ func NewStorageHandler(info string) *StorageHandler {
 	return r
 }
 
-/*func NewStorageHandler(h *RedisHandler) *StorageHandler {
-	r := new(StorageHandler)
-	r.handler = h
-
-	return r
-}*/
-
 func (s *StorageHandler) SetUsrSession(cid string, session string) error {
 	key := cid + login_session_format
 
