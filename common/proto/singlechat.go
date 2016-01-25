@@ -9,12 +9,11 @@ import (
 
 //peer packet type
 const (
-	SENDMSGREQ_TYPE = iota + 1
-	SENDMSGRES_TYPE
-	GETMSGREQ_TYPE
-	GETMSGRES_TYPE
-	PUSHMSGREQ_TYPE
-	RECVMSGRES_TYPE
+	SENDPMSGREQ_TYPE = iota + 1
+	SENDPMSGRES_TYPE
+	GETPMSGREQ_TYPE
+	GETPMSGRES_TYPE
+	RECVPMSGRES_TYPE
 )
 
 func UnmarshalPeerPacket(d []byte) (*PeerPacket, error) {
@@ -38,13 +37,23 @@ func UnmarshalPeerMessage(d []byte) (*PeerMessage, error) {
 }
 
 func UnmarshalSendPMsgReq(d []byte) (*SendPeerMessageReq, error) {
-	var smsg SendPeerMessageReq
-	err := smsg.Unmarshal(d)
+	var req SendPeerMessageReq
+	err := req.Unmarshal(d)
 	if err != nil {
 		return nil, err
 	}
 
-	return &smsg, nil
+	return &req, nil
+}
+
+func UnmarshalSendPMsgRes(d []byte) (*SendPeerMessageRes, error) {
+	var res SendPeerMessageRes
+	err := res.Unmarshal(d)
+	if err != nil {
+		return nil, err
+	}
+
+	return &res, nil
 }
 
 func UnmarshalGetPMsgReq(d []byte) (*GetPeerMessageReq, error) {
@@ -75,16 +84,6 @@ func UnmarshalGetPMsgRes(d []byte) (*GetPeerMessageRes, error) {
 	}
 
 	return &res, nil
-}
-
-func UnmarshalPushMsgReq(d []byte) (*PushPeerMessageReq, error) {
-	var req PushPeerMessageReq
-	err := req.Unmarshal(d)
-	if err != nil {
-		return nil, err
-	}
-
-	return &req, nil
 }
 
 func MarshalRecvMsgRes(cid string, ids []int64) ([]byte, error) {
@@ -128,17 +127,12 @@ func MarshalSendMsgReq(from string, to string, data []byte) ([]byte, error) {
 	return req.Marshal()
 }
 
-func MarshalSendPMsgRes(status int32, sn string) ([]byte, error) {
+func MarshalSendPMsgRes(cid string, status int32, sn string, id int64) ([]byte, error) {
 	var smsg SendPeerMessageRes
+	smsg.Cid = cid
 	smsg.Status = status
 	smsg.Sn = sn
+	smsg.Id = id
 
 	return smsg.Marshal()
-}
-
-func MarshalPushPMsgReq(msg *PeerMessage) ([]byte, error) {
-	var pmsg PushPeerMessageReq
-	pmsg.Msg = msg
-
-	return pmsg.Marshal()
 }

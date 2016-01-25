@@ -17,8 +17,10 @@ message SendPeerMessageReq{
 }
 
 message SendPeerMessageRes{
-	int32 status = 1;
-	string sn = 2;
+	string cid = 1;
+	int32 status = 2;
+	string sn = 3;
+	int64 id = 4;
 }
 
 message GetPeerMessageReq{
@@ -27,10 +29,6 @@ message GetPeerMessageReq{
 
 message GetPeerMessageRes{
 	repeated PeerMessage msgs = 1;
-}
-
-message PushPeerMessageReq{
-	PeerMessage msg = 1;
 }
 
 message RecvPeerMessageRes{
