@@ -31,7 +31,7 @@ func SendServiceMsg(con *connectServer, r *aproto.ServiceRequest, pp []byte) {
 	golog.Info("send service res to [connect_server]:", con.addr, "[id]:", con.id, "[token]:", strings.ToUpper(hex.EncodeToString(r.Token)), "[data_len]:", len(data))
 }
 
-func SendPushMsgToUsr(r *aproto.ServiceRequest, rq *aproto.SendPeerMessageReq) {
+func SendPMsgToUsr(r *aproto.ServiceRequest, rq *aproto.SendPeerMessageReq) {
 	hnl := storage.GetStorage().GetSessionHandler(rq.Msg.To)
 	//get usr session
 	session, err := hnl.GetUsrSession(rq.Msg.To)
@@ -49,15 +49,15 @@ func SendPushMsgToUsr(r *aproto.ServiceRequest, rq *aproto.SendPeerMessageReq) {
 	token, _ := hex.DecodeString(session[:idx])
 	id, _ := strconv.Atoi(session[idx+1:])
 
-	//construct PushPeerMsgReq
-	d, err := aproto.MarshalPushPMsgReq(rq.Msg)
+	//construct SendPeerMsgReq
+	d, err := rq.Marshal()
 	if err != nil {
 		golog.Error(err)
 		return
 	}
 
 	//construct PeerPacket
-	p, err := aproto.MarshalPeerPacket(aproto.PUSHMSGREQ_TYPE, d)
+	p, err := aproto.MarshalPeerPacket(aproto.SENDPMSGREQ_TYPE, d)
 	if err != nil {
 		golog.Error(err)
 		return
@@ -77,6 +77,6 @@ func SendPushMsgToUsr(r *aproto.ServiceRequest, rq *aproto.SendPeerMessageReq) {
 		if err != nil {
 			golog.Error(err)
 		}
-		golog.Info("Send Push Msg to [cid]:", rq.Msg.To, "[token]:", session[:idx], "[connect_id]:", id, "[data_len]:", len(data))
+		golog.Info("Send Peer Msg to [cid]:", rq.Msg.To, "[token]:", session[:idx], "[connect_id]:", id, "[data_len]:", len(data))
 	}
 }

@@ -126,11 +126,13 @@ func (s *connectServer) handlerPeerCmd(req *aproto.ServiceRequest) {
 	}
 
 	switch pg.PacketType {
-	case aproto.SENDMSGREQ_TYPE:
-		g_singlechat.handlerSendMsgReq(s, req, pg.Data)
-	case aproto.GETMSGREQ_TYPE:
+	case aproto.SENDPMSGREQ_TYPE:
+		g_singlechat.handlerSendPMsgReq(s, req, pg.Data)
+	case aproto.SENDPMSGRES_TYPE:
+		g_singlechat.handlerSendPMsgRes(s, req, pg.Data)
+	case aproto.GETPMSGREQ_TYPE:
 		g_singlechat.handlerGetMsgReq(s, req, pg.Data)
-	case aproto.RECVMSGRES_TYPE:
+	case aproto.RECVPMSGRES_TYPE:
 		g_singlechat.handlerRecvMsgRes(s, req, pg.Data)
 	}
 }
