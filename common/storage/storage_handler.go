@@ -13,7 +13,7 @@ import (
 const login_session_format = "_LOGIN_SESSION"
 const message_id_format = "_MSG_ID"
 const peer_message_format = "_PEER_MSG"
-const server_message_format = "_SERVER_MSG"
+const relation_message_format = "_SERVER_MSG"
 const friend_list_format = "_FRIEND_LIST"
 const black_list_format = "_BLACK_LIST"
 
@@ -37,14 +37,14 @@ func NewStorageHandler(info string) *StorageHandler {
 	return r
 }
 
-func (s *StorageHandler) AddSystemMsg(cid string, msg string, id int) error {
-	key := cid + server_message_format
+func (s *StorageHandler) AddRelationMsg(cid string, msg string, id int) error {
+	key := cid + relation_message_format
 
 	return s.handler.SetHash(key, strconv.Itoa(id), msg)
 }
 
-func (s *StorageHandler) DelSystemMsg(cid string, ids []int64) error {
-	key := cid + server_message_format
+func (s *StorageHandler) DelRelationMsg(cid string, ids []int64) error {
+	key := cid + relation_message_format
 	var fileds []string
 	for _, v := range ids {
 		fileds = append(fileds, strconv.Itoa(int(v)))
@@ -53,14 +53,14 @@ func (s *StorageHandler) DelSystemMsg(cid string, ids []int64) error {
 	return s.handler.DelHash(key, fileds)
 }
 
-func (s *StorageHandler) GetSystemMsgs(cid string) (map[string]string, error) {
-	key := cid + server_message_format
+func (s *StorageHandler) GetRelationMsgs(cid string) (map[string]string, error) {
+	key := cid + relation_message_format
 
 	return s.handler.GetAllHash(key)
 }
 
-func (s *StorageHandler) GetSystemMsgsSize(cid string) (int, error) {
-	key := cid + server_message_format
+func (s *StorageHandler) GetRelationMsgsSize(cid string) (int, error) {
+	key := cid + relation_message_format
 
 	return s.handler.GetHashLen(key)
 }
