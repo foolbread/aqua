@@ -4,12 +4,11 @@
 package server
 
 import (
-	aerr "aqua/common/error"
 	aproto "aqua/common/proto"
+	astorage "aqua/common/storage"
 	"aqua/singlechat_server/config"
 	"aqua/singlechat_server/storage"
 	"encoding/hex"
-	"strconv"
 	"strings"
 
 	"github.com/foolbread/fbcommon/golog"
@@ -40,14 +39,10 @@ func SendPMsgToUsr(r *aproto.ServiceRequest, rq *aproto.SendPeerMessageReq) {
 		return
 	}
 
-	idx := strings.LastIndex(session, "_")
-	if idx < 0 {
-		golog.Error(aerr.ErrSessionFormat)
+	token, id := astorage.ParseSession(session)
+	if token == nil {
 		return
 	}
-
-	token, _ := hex.DecodeString(session[:idx])
-	id, _ := strconv.Atoi(session[idx+1:])
 
 	//construct SendPeerMsgReq
 	d, err := rq.Marshal()
@@ -77,6 +72,6 @@ func SendPMsgToUsr(r *aproto.ServiceRequest, rq *aproto.SendPeerMessageReq) {
 		if err != nil {
 			golog.Error(err)
 		}
-		golog.Info("Send Peer Msg to [cid]:", rq.Msg.To, "[token]:", session[:idx], "[connect_id]:", id, "[data_len]:", len(data))
+		golog.Info("Send Peer Msg to [cid]:", rq.Msg.To, "[token]:", hex.EncodeToString(token), "[connect_id]:", id, "[data_len]:", len(data))
 	}
 }
