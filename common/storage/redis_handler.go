@@ -111,7 +111,13 @@ func (s *RedisHandler) GetAllHash(key string) (map[string]string, error) {
 	return rsp.Map()
 }
 
-func (s *RedisHandler) DelHash(key string, fields []string) error {
+func (s *RedisHandler) DelHash(key string, field string) error {
+	rsp := s.redisCmd("HDEL", key, field)
+
+	return rsp.Err
+}
+
+func (s *RedisHandler) DelHashs(key string, fields []string) error {
 	var args []string
 	args = append(args, key)
 	args = append(args, fields...)

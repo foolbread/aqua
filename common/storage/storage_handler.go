@@ -43,14 +43,20 @@ func (s *StorageHandler) AddRelationMsg(cid string, msg string, id int) error {
 	return s.handler.SetHash(key, strconv.Itoa(id), msg)
 }
 
-func (s *StorageHandler) DelRelationMsg(cid string, ids []int64) error {
+func (s *StorageHandler) DelRelationMsg(cid string, id int64) error {
+	key := cid + relation_message_format
+
+	return s.handler.DelHash(key, strconv.Itoa(int(id)))
+}
+
+func (s *StorageHandler) DelRelationMsgs(cid string, ids []int64) error {
 	key := cid + relation_message_format
 	var fileds []string
 	for _, v := range ids {
 		fileds = append(fileds, strconv.Itoa(int(v)))
 	}
 
-	return s.handler.DelHash(key, fileds)
+	return s.handler.DelHashs(key, fileds)
 }
 
 func (s *StorageHandler) GetRelationMsgs(cid string) (map[string]string, error) {
@@ -142,14 +148,20 @@ func (s *StorageHandler) AddPeerMsg(cid string, msg string, id int) error {
 	return s.handler.SetHash(key, strconv.Itoa(id), msg)
 }
 
-func (s *StorageHandler) DelPeerMsg(cid string, ids []int64) error {
+func (s *StorageHandler) DelPeerMsg(cid string, id int64) error {
+	key := cid + peer_message_format
+
+	return s.handler.DelHash(key, strconv.Itoa(int(id)))
+}
+
+func (s *StorageHandler) DelPeerMsgs(cid string, ids []int64) error {
 	key := cid + peer_message_format
 	var fileds []string
 	for k, _ := range ids {
 		fileds = append(fileds, strconv.Itoa(int(ids[k])))
 	}
 
-	return s.handler.DelHash(key, fileds)
+	return s.handler.DelHashs(key, fileds)
 }
 
 func (s *StorageHandler) GetPeerMsgs(cid string) (map[string]string, error) {
