@@ -9,10 +9,11 @@ import (
 
 //status
 const (
-	STATUS_OK     = 0
-	ALREADY_LOGIN = 1
-	SERVICE_ERROR = 2
-	MESSAGE_FULL  = 3
+	STATUS_OK         = 0
+	ALREADY_LOGIN     = 1
+	SERVICE_ERROR     = 2
+	MESSAGE_FULL      = 3
+	WAITTING_RESPONSE = 4
 )
 
 //cmd
