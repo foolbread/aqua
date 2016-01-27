@@ -30,10 +30,10 @@ func SendServiceMsg(con *connectServer, r *aproto.ServiceRequest, pp []byte) {
 	golog.Info("send service res to [connect_server]:", con.addr, "[id]:", con.id, "[token]:", strings.ToUpper(hex.EncodeToString(r.Token)), "[data_len]:", len(data))
 }
 
-func SendPMsgToUsr(r *aproto.ServiceRequest, rq *aproto.SendPeerMessageReq) {
-	hnl := storage.GetStorage().GetSessionHandler(rq.Msg.To)
+func SendServiceMsgEx(cid string, pp []byte, sn string) {
+	hnl := storage.GetStorage().GetSessionHandler(cid)
 	//get usr session
-	session, err := hnl.GetUsrSession(rq.Msg.To)
+	session, err := hnl.GetUsrSession(cid)
 	if err != nil {
 		golog.Error(err)
 		return
@@ -44,22 +44,7 @@ func SendPMsgToUsr(r *aproto.ServiceRequest, rq *aproto.SendPeerMessageReq) {
 		return
 	}
 
-	//construct SendPeerMsgReq
-	d, err := rq.Marshal()
-	if err != nil {
-		golog.Error(err)
-		return
-	}
-
-	//construct PeerPacket
-	p, err := aproto.MarshalPeerPacket(aproto.SENDPMSGREQ_TYPE, d)
-	if err != nil {
-		golog.Error(err)
-		return
-	}
-
-	//construct ServiceRes
-	data, err := aproto.MarshalServiceRes(token, int32(config.GetConfig().GetServiceType()), r.Sn, aproto.STATUS_OK, p)
+	data, err := aproto.MarshalServiceRes(token, int32(config.GetConfig().GetServiceType()), sn, aproto.STATUS_OK, pp)
 	if err != nil {
 		golog.Error(err)
 		return
@@ -68,10 +53,26 @@ func SendPMsgToUsr(r *aproto.ServiceRequest, rq *aproto.SendPeerMessageReq) {
 	csvr := g_conmanager.getConnectSvr(id)
 
 	if csvr != nil {
-		err := csvr.SendToCon(data)
+		err = csvr.SendToCon(data)
 		if err != nil {
 			golog.Error(err)
+			return
 		}
-		golog.Info("Send Peer Msg to [cid]:", rq.Msg.To, "[token]:", hex.EncodeToString(token), "[connect_id]:", id, "[data_len]:", len(data))
+		golog.Info("send service res to [connect_server]:", csvr.addr, "[id]:", csvr.id, "[token]:", strings.ToUpper(hex.EncodeToString(token)), "[data_len]:", len(data))
+	}
+
+}
+
+func SendMsg(con *connectServer, cid string, r *aproto.ServiceRequest, msg []byte, ty int32) {
+	pp, err := aproto.MarshalPeerPacket(ty, msg)
+	if err != nil {
+		golog.Error(err)
+		return
+	}
+
+	if con != nil {
+		SendServiceMsg(con, r, pp)
+	} else {
+		SendServiceMsgEx(cid, pp, r.Sn)
 	}
 }
