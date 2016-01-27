@@ -83,8 +83,8 @@ func (m *AddFriendRes) String() string { return proto1.CompactTextString(m) }
 func (*AddFriendRes) ProtoMessage()    {}
 
 type DelFriendReq struct {
-	From   string `protobuf:"bytes,2,opt,name=from,proto3" json:"from,omitempty"`
-	Friend string `protobuf:"bytes,3,opt,name=friend,proto3" json:"friend,omitempty"`
+	From   string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	Friend string `protobuf:"bytes,2,opt,name=friend,proto3" json:"friend,omitempty"`
 }
 
 func (m *DelFriendReq) Reset()         { *m = DelFriendReq{} }
@@ -92,10 +92,9 @@ func (m *DelFriendReq) String() string { return proto1.CompactTextString(m) }
 func (*DelFriendReq) ProtoMessage()    {}
 
 type DelFriendRes struct {
-	Id     int64  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	From   string `protobuf:"bytes,2,opt,name=from,proto3" json:"from,omitempty"`
-	Friend string `protobuf:"bytes,3,opt,name=friend,proto3" json:"friend,omitempty"`
-	Status int32  `protobuf:"varint,4,opt,name=status,proto3" json:"status,omitempty"`
+	From   string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	Friend string `protobuf:"bytes,2,opt,name=friend,proto3" json:"friend,omitempty"`
+	Status int32  `protobuf:"varint,3,opt,name=status,proto3" json:"status,omitempty"`
 }
 
 func (m *DelFriendRes) Reset()         { *m = DelFriendRes{} }
@@ -103,8 +102,8 @@ func (m *DelFriendRes) String() string { return proto1.CompactTextString(m) }
 func (*DelFriendRes) ProtoMessage()    {}
 
 type AddBlackReq struct {
-	From  string `protobuf:"bytes,2,opt,name=from,proto3" json:"from,omitempty"`
-	Black string `protobuf:"bytes,3,opt,name=black,proto3" json:"black,omitempty"`
+	From  string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	Black string `protobuf:"bytes,2,opt,name=black,proto3" json:"black,omitempty"`
 }
 
 func (m *AddBlackReq) Reset()         { *m = AddBlackReq{} }
@@ -112,10 +111,9 @@ func (m *AddBlackReq) String() string { return proto1.CompactTextString(m) }
 func (*AddBlackReq) ProtoMessage()    {}
 
 type AddBlackRes struct {
-	Id     int64  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	From   string `protobuf:"bytes,2,opt,name=from,proto3" json:"from,omitempty"`
-	Black  string `protobuf:"bytes,3,opt,name=black,proto3" json:"black,omitempty"`
-	Status int32  `protobuf:"varint,4,opt,name=status,proto3" json:"status,omitempty"`
+	From   string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	Black  string `protobuf:"bytes,2,opt,name=black,proto3" json:"black,omitempty"`
+	Status int32  `protobuf:"varint,3,opt,name=status,proto3" json:"status,omitempty"`
 }
 
 func (m *AddBlackRes) Reset()         { *m = AddBlackRes{} }
@@ -132,10 +130,9 @@ func (m *DelBlackReq) String() string { return proto1.CompactTextString(m) }
 func (*DelBlackReq) ProtoMessage()    {}
 
 type DelBlackRes struct {
-	Id     int64  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	From   string `protobuf:"bytes,2,opt,name=from,proto3" json:"from,omitempty"`
-	Black  string `protobuf:"bytes,3,opt,name=black,proto3" json:"black,omitempty"`
-	Status int32  `protobuf:"varint,4,opt,name=status,proto3" json:"status,omitempty"`
+	From   string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	Black  string `protobuf:"bytes,2,opt,name=black,proto3" json:"black,omitempty"`
+	Status int32  `protobuf:"varint,3,opt,name=status,proto3" json:"status,omitempty"`
 }
 
 func (m *DelBlackRes) Reset()         { *m = DelBlackRes{} }
@@ -293,13 +290,13 @@ func (m *DelFriendReq) MarshalTo(data []byte) (int, error) {
 	var l int
 	_ = l
 	if len(m.From) > 0 {
-		data[i] = 0x12
+		data[i] = 0xa
 		i++
 		i = encodeVarintRelation(data, i, uint64(len(m.From)))
 		i += copy(data[i:], m.From)
 	}
 	if len(m.Friend) > 0 {
-		data[i] = 0x1a
+		data[i] = 0x12
 		i++
 		i = encodeVarintRelation(data, i, uint64(len(m.Friend)))
 		i += copy(data[i:], m.Friend)
@@ -322,25 +319,20 @@ func (m *DelFriendRes) MarshalTo(data []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Id != 0 {
-		data[i] = 0x8
-		i++
-		i = encodeVarintRelation(data, i, uint64(m.Id))
-	}
 	if len(m.From) > 0 {
-		data[i] = 0x12
+		data[i] = 0xa
 		i++
 		i = encodeVarintRelation(data, i, uint64(len(m.From)))
 		i += copy(data[i:], m.From)
 	}
 	if len(m.Friend) > 0 {
-		data[i] = 0x1a
+		data[i] = 0x12
 		i++
 		i = encodeVarintRelation(data, i, uint64(len(m.Friend)))
 		i += copy(data[i:], m.Friend)
 	}
 	if m.Status != 0 {
-		data[i] = 0x20
+		data[i] = 0x18
 		i++
 		i = encodeVarintRelation(data, i, uint64(m.Status))
 	}
@@ -363,13 +355,13 @@ func (m *AddBlackReq) MarshalTo(data []byte) (int, error) {
 	var l int
 	_ = l
 	if len(m.From) > 0 {
-		data[i] = 0x12
+		data[i] = 0xa
 		i++
 		i = encodeVarintRelation(data, i, uint64(len(m.From)))
 		i += copy(data[i:], m.From)
 	}
 	if len(m.Black) > 0 {
-		data[i] = 0x1a
+		data[i] = 0x12
 		i++
 		i = encodeVarintRelation(data, i, uint64(len(m.Black)))
 		i += copy(data[i:], m.Black)
@@ -392,25 +384,20 @@ func (m *AddBlackRes) MarshalTo(data []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Id != 0 {
-		data[i] = 0x8
-		i++
-		i = encodeVarintRelation(data, i, uint64(m.Id))
-	}
 	if len(m.From) > 0 {
-		data[i] = 0x12
+		data[i] = 0xa
 		i++
 		i = encodeVarintRelation(data, i, uint64(len(m.From)))
 		i += copy(data[i:], m.From)
 	}
 	if len(m.Black) > 0 {
-		data[i] = 0x1a
+		data[i] = 0x12
 		i++
 		i = encodeVarintRelation(data, i, uint64(len(m.Black)))
 		i += copy(data[i:], m.Black)
 	}
 	if m.Status != 0 {
-		data[i] = 0x20
+		data[i] = 0x18
 		i++
 		i = encodeVarintRelation(data, i, uint64(m.Status))
 	}
@@ -462,25 +449,20 @@ func (m *DelBlackRes) MarshalTo(data []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Id != 0 {
-		data[i] = 0x8
-		i++
-		i = encodeVarintRelation(data, i, uint64(m.Id))
-	}
 	if len(m.From) > 0 {
-		data[i] = 0x12
+		data[i] = 0xa
 		i++
 		i = encodeVarintRelation(data, i, uint64(len(m.From)))
 		i += copy(data[i:], m.From)
 	}
 	if len(m.Black) > 0 {
-		data[i] = 0x1a
+		data[i] = 0x12
 		i++
 		i = encodeVarintRelation(data, i, uint64(len(m.Black)))
 		i += copy(data[i:], m.Black)
 	}
 	if m.Status != 0 {
-		data[i] = 0x20
+		data[i] = 0x18
 		i++
 		i = encodeVarintRelation(data, i, uint64(m.Status))
 	}
@@ -620,9 +602,6 @@ func (m *DelFriendReq) Size() (n int) {
 func (m *DelFriendRes) Size() (n int) {
 	var l int
 	_ = l
-	if m.Id != 0 {
-		n += 1 + sovRelation(uint64(m.Id))
-	}
 	l = len(m.From)
 	if l > 0 {
 		n += 1 + l + sovRelation(uint64(l))
@@ -654,9 +633,6 @@ func (m *AddBlackReq) Size() (n int) {
 func (m *AddBlackRes) Size() (n int) {
 	var l int
 	_ = l
-	if m.Id != 0 {
-		n += 1 + sovRelation(uint64(m.Id))
-	}
 	l = len(m.From)
 	if l > 0 {
 		n += 1 + l + sovRelation(uint64(l))
@@ -688,9 +664,6 @@ func (m *DelBlackReq) Size() (n int) {
 func (m *DelBlackRes) Size() (n int) {
 	var l int
 	_ = l
-	if m.Id != 0 {
-		n += 1 + sovRelation(uint64(m.Id))
-	}
 	l = len(m.From)
 	if l > 0 {
 		n += 1 + l + sovRelation(uint64(l))
@@ -1160,7 +1133,7 @@ func (m *DelFriendReq) Unmarshal(data []byte) error {
 			return fmt.Errorf("proto: DelFriendReq: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
-		case 2:
+		case 1:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
 			}
@@ -1189,7 +1162,7 @@ func (m *DelFriendReq) Unmarshal(data []byte) error {
 			}
 			m.From = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 3:
+		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Friend", wireType)
 			}
@@ -1269,25 +1242,6 @@ func (m *DelFriendRes) Unmarshal(data []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
-			}
-			m.Id = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowRelation
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				m.Id |= (int64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
 			}
@@ -1316,7 +1270,7 @@ func (m *DelFriendRes) Unmarshal(data []byte) error {
 			}
 			m.From = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 3:
+		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Friend", wireType)
 			}
@@ -1345,7 +1299,7 @@ func (m *DelFriendRes) Unmarshal(data []byte) error {
 			}
 			m.Friend = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 4:
+		case 3:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
 			}
@@ -1414,7 +1368,7 @@ func (m *AddBlackReq) Unmarshal(data []byte) error {
 			return fmt.Errorf("proto: AddBlackReq: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
-		case 2:
+		case 1:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
 			}
@@ -1443,7 +1397,7 @@ func (m *AddBlackReq) Unmarshal(data []byte) error {
 			}
 			m.From = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 3:
+		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Black", wireType)
 			}
@@ -1523,25 +1477,6 @@ func (m *AddBlackRes) Unmarshal(data []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
-			}
-			m.Id = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowRelation
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				m.Id |= (int64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
 			}
@@ -1570,7 +1505,7 @@ func (m *AddBlackRes) Unmarshal(data []byte) error {
 			}
 			m.From = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 3:
+		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Black", wireType)
 			}
@@ -1599,7 +1534,7 @@ func (m *AddBlackRes) Unmarshal(data []byte) error {
 			}
 			m.Black = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 4:
+		case 3:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
 			}
@@ -1777,25 +1712,6 @@ func (m *DelBlackRes) Unmarshal(data []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
-			}
-			m.Id = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowRelation
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				m.Id |= (int64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
 			}
@@ -1824,7 +1740,7 @@ func (m *DelBlackRes) Unmarshal(data []byte) error {
 			}
 			m.From = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 3:
+		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Black", wireType)
 			}
@@ -1853,7 +1769,7 @@ func (m *DelBlackRes) Unmarshal(data []byte) error {
 			}
 			m.Black = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 4:
+		case 3:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
 			}

@@ -8,7 +8,7 @@ const (
 	ADDFRIENDREQ_TYPE = iota + 1
 	ADDFRIENDRES_TYPE
 	DELFRIENDREQ_TYPE
-	DELFRIEDNRES_TYPE
+	DELFRIENDRES_TYPE
 	ADDBLACKREQ_TYPE
 	ADDBLACKRES_TYPE
 	DELBLACKREQ_TYPE
@@ -39,6 +39,26 @@ func UnmarshalAddFriendReq(d []byte) (*AddFriendReq, error) {
 	return &req, nil
 }
 
+func UnmarshalDelFriendRes(d []byte) (*DelFriendRes, error) {
+	var res DelFriendRes
+	err := res.Unmarshal(d)
+	if err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+func UnmarshalDelFriendReq(d []byte) (*DelFriendReq, error) {
+	var req DelFriendReq
+	err := req.Unmarshal(d)
+	if err != nil {
+		return nil, err
+	}
+
+	return &req, nil
+}
+
 func UnmarshalRelationpacket(d []byte) (*RelationPacket, error) {
 	var pa RelationPacket
 
@@ -56,6 +76,23 @@ func MarshalRelationPacket(ty int32, d []byte) ([]byte, error) {
 	pa.Data = d
 
 	return pa.Marshal()
+}
+
+func MarshalDelFriendReq(from string, friend string) ([]byte, error) {
+	var req DelFriendReq
+	req.From = from
+	req.Friend = friend
+
+	return req.Marshal()
+}
+
+func MarshalDelFriendRes(from string, friend string, status int32) ([]byte, error) {
+	var res DelFriendRes
+	res.From = from
+	res.Friend = friend
+	res.Status = status
+
+	return res.Marshal()
 }
 
 func MarshalAddFriendReq(id int64, from string, friend string, d []byte) ([]byte, error) {

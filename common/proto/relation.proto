@@ -22,27 +22,25 @@ message AddFriendRes{
 }
 
 message DelFriendReq{
-	string from = 2;
-	string friend = 3;
+	string from = 1;
+	string friend = 2;
 }
 
 message DelFriendRes{
-	int64 id = 1; 
-	string from = 2;
-	string friend = 3;
-	int32 status = 4;
+	string from = 1;
+	string friend = 2;
+	int32 status = 3;
 }
 
 message AddBlackReq{
-	string from = 2;
-	string black = 3;
+	string from = 1;
+	string black = 2;
 }
 
 message AddBlackRes{
-	int64 id = 1; 
-	string from =2;
-	string black = 3;
-	int32 status = 4;
+	string from =1;
+	string black = 2;
+	int32 status = 3;
 }
 
 message DelBlackReq{
@@ -51,10 +49,9 @@ message DelBlackReq{
 }
 
 message DelBlackRes{
-	int64 id = 1; 
-	string from = 2;
-	string black = 3;
-	int32 status = 4;
+	string from = 1;
+	string black = 2;
+	int32 status = 3;
 }
 
 message RecvRelationPacket{
