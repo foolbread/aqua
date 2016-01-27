@@ -35,7 +35,7 @@ func (s *RedisHandler) AddSet(set, key string) error {
 }
 
 func (s *RedisHandler) DelSet(set, key string) error {
-	rsp := s.redisCmd("SMOVE", set, key)
+	rsp := s.redisCmd("SREM", set, key)
 	return rsp.Err
 }
 

@@ -20,6 +20,33 @@ func newRelationServer() *relationServer {
 	return r
 }
 
+func (s *relationServer) handlerDelBlackReq(con *connectServer, r *aproto.ServiceRequest, d []byte) {
+	req, err := aproto.UnmarshalDelBlackReq(d)
+	if err != nil {
+		golog.Error(err)
+		return
+	}
+
+	golog.Info("handlerDelBlackReq", "from:", req.From, "black:", req.Black)
+
+	hnl := storage.GetStorage().GetRelationHandler(req.From)
+
+	var status int32 = aproto.STATUS_OK
+	err = hnl.DelUsrBlack(req.From, req.Black)
+	if err != nil {
+		golog.Error(err)
+		status = aproto.SERVICE_ERROR
+	}
+
+	res, err := aproto.MarshalDelBlackRes(req.From, req.Black, status)
+	if err != nil {
+		golog.Error(err)
+		return
+	}
+
+	SendMsg(con, req.From, r, res, aproto.DELBLACKRES_TYPE)
+}
+
 func (s *relationServer) handlerAddBlackReq(con *connectServer, r *aproto.ServiceRequest, d []byte) {
 	req, err := aproto.UnmarshalAddBlackReq(d)
 	if err != nil {
@@ -31,17 +58,20 @@ func (s *relationServer) handlerAddBlackReq(con *connectServer, r *aproto.Servic
 
 	hnl := storage.GetStorage().GetRelationHandler(req.From)
 
+	var status int32 = aproto.STATUS_OK
 	err = hnl.DelUsrFriend(req.From, req.Black)
 	if err != nil {
 		golog.Error(err)
+		status = aproto.SERVICE_ERROR
 	}
 
 	err = hnl.AddUsrBlack(req.From, req.Black)
 	if err != nil {
 		golog.Error(err)
+		status = aproto.SERVICE_ERROR
 	}
 
-	res, err := aproto.MarshalAddBlackRes(req.From, req.Black, aproto.STATUS_OK)
+	res, err := aproto.MarshalAddBlackRes(req.From, req.Black, status)
 	if err != nil {
 		golog.Error(err)
 		return
@@ -62,17 +92,20 @@ func (s *relationServer) handlerDelFriendReq(con *connectServer, r *aproto.Servi
 	h1 := storage.GetStorage().GetRelationHandler(req.From)
 	h2 := storage.GetStorage().GetRelationHandler(req.Friend)
 
+	var status int32 = aproto.STATUS_OK
 	err = h1.DelUsrFriend(req.From, req.Friend)
 	if err != nil {
 		golog.Error(err)
+		status = aproto.SERVICE_ERROR
 	}
 
 	err = h2.DelUsrFriend(req.Friend, req.From)
 	if err != nil {
 		golog.Error(err)
+		status = aproto.SERVICE_ERROR
 	}
 
-	res, err := aproto.MarshalDelFriendRes(req.From, req.Friend, aproto.STATUS_OK)
+	res, err := aproto.MarshalDelFriendRes(req.From, req.Friend, status)
 	if err != nil {
 		golog.Error(err)
 		return
