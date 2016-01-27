@@ -59,6 +59,46 @@ func UnmarshalDelFriendReq(d []byte) (*DelFriendReq, error) {
 	return &req, nil
 }
 
+func UnmarshalAddBlackReq(d []byte) (*AddBlackReq, error) {
+	var req AddBlackReq
+	err := req.Unmarshal(d)
+	if err != nil {
+		return nil, err
+	}
+
+	return &req, nil
+}
+
+func UnmarshalAddBlackRes(d []byte) (*AddBlackRes, error) {
+	var res AddBlackRes
+	err := res.Unmarshal(d)
+	if err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+func UnmarshalDelBlackReq(d []byte) (*DelBlackReq, error) {
+	var req DelBlackReq
+	err := req.Unmarshal(d)
+	if err != nil {
+		return nil, err
+	}
+
+	return &req, nil
+}
+
+func UnmarshalDelBlackRes(d []byte) (*DelBlackRes, error) {
+	var res DelBlackRes
+	err := res.Unmarshal(d)
+	if err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
 func UnmarshalRelationpacket(d []byte) (*RelationPacket, error) {
 	var pa RelationPacket
 
@@ -76,6 +116,40 @@ func MarshalRelationPacket(ty int32, d []byte) ([]byte, error) {
 	pa.Data = d
 
 	return pa.Marshal()
+}
+
+func MarshalDelBlackRes(from string, black string, status int32) ([]byte, error) {
+	var res DelBlackRes
+	res.From = from
+	res.Black = black
+	res.Status = status
+
+	return res.Marshal()
+}
+
+func MarshalDelBlackReq(from string, black string) ([]byte, error) {
+	var req DelBlackReq
+	req.From = from
+	req.Black = black
+
+	return req.Marshal()
+}
+
+func MarshalAddBlackRes(from string, black string, status int32) ([]byte, error) {
+	var res AddBlackRes
+	res.From = from
+	res.Black = black
+	res.Status = status
+
+	return res.Marshal()
+}
+
+func MarshalAddBlackReq(from string, black string) ([]byte, error) {
+	var req AddBlackReq
+	req.From = from
+	req.Black = black
+
+	return req.Marshal()
 }
 
 func MarshalDelFriendReq(from string, friend string) ([]byte, error) {

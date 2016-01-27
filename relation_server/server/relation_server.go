@@ -20,6 +20,36 @@ func newRelationServer() *relationServer {
 	return r
 }
 
+func (s *relationServer) handlerAddBlackReq(con *connectServer, r *aproto.ServiceRequest, d []byte) {
+	req, err := aproto.UnmarshalAddBlackReq(d)
+	if err != nil {
+		golog.Error(err)
+		return
+	}
+
+	golog.Info("handlerAddBlackReq", "from:", req.From, "black:", req.Black)
+
+	hnl := storage.GetStorage().GetRelationHandler(req.From)
+
+	err = hnl.DelUsrFriend(req.From, req.Black)
+	if err != nil {
+		golog.Error(err)
+	}
+
+	err = hnl.AddUsrBlack(req.From, req.Black)
+	if err != nil {
+		golog.Error(err)
+	}
+
+	res, err := aproto.MarshalAddBlackRes(req.From, req.Black, aproto.STATUS_OK)
+	if err != nil {
+		golog.Error(err)
+		return
+	}
+
+	SendMsg(con, req.From, r, res, aproto.ADDBLACKRES_TYPE)
+}
+
 func (s *relationServer) handlerDelFriendReq(con *connectServer, r *aproto.ServiceRequest, d []byte) {
 	req, err := aproto.UnmarshalDelFriendReq(d)
 	if err != nil {
@@ -32,8 +62,15 @@ func (s *relationServer) handlerDelFriendReq(con *connectServer, r *aproto.Servi
 	h1 := storage.GetStorage().GetRelationHandler(req.From)
 	h2 := storage.GetStorage().GetRelationHandler(req.Friend)
 
-	h1.DelUsrFriend(req.From, req.Friend)
-	h2.DelUsrFriend(req.Friend, req.From)
+	err = h1.DelUsrFriend(req.From, req.Friend)
+	if err != nil {
+		golog.Error(err)
+	}
+
+	err = h2.DelUsrFriend(req.Friend, req.From)
+	if err != nil {
+		golog.Error(err)
+	}
 
 	res, err := aproto.MarshalDelFriendRes(req.From, req.Friend, aproto.STATUS_OK)
 	if err != nil {
