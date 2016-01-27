@@ -20,12 +20,38 @@ func newRelationServer() *relationServer {
 	return r
 }
 
+func (s *relationServer) handlerDelFriendReq(con *connectServer, r *aproto.ServiceRequest, d []byte) {
+	req, err := aproto.UnmarshalDelFriendReq(d)
+	if err != nil {
+		golog.Error(err)
+		return
+	}
+
+	golog.Info("handlerDelFriendReq", "from:", req.From, "friend:", req.Friend)
+
+	h1 := storage.GetStorage().GetRelationHandler(req.From)
+	h2 := storage.GetStorage().GetRelationHandler(req.Friend)
+
+	h1.DelUsrFriend(req.From, req.Friend)
+	h2.DelUsrFriend(req.Friend, req.From)
+
+	res, err := aproto.MarshalDelFriendRes(req.From, req.Friend, aproto.STATUS_OK)
+	if err != nil {
+		golog.Error(err)
+		return
+	}
+
+	SendMsg(con, req.From, r, res, aproto.DELFRIENDRES_TYPE)
+}
+
 func (s *relationServer) handlerAddFriendRes(con *connectServer, r *aproto.ServiceRequest, d []byte) {
 	res, err := aproto.UnmarshalAddFriendRes(d)
 	if err != nil {
 		golog.Error(err)
 		return
 	}
+
+	golog.Info("handlerAddFriendRes", "from:", res.From, "friend:", res.Friend, "status:", res.Status)
 
 	if res.Status == aproto.AGREE_REQUEST {
 		h1 := storage.GetStorage().GetRelationHandler(res.From)
@@ -42,7 +68,7 @@ func (s *relationServer) handlerAddFriendRes(con *connectServer, r *aproto.Servi
 		}
 	}
 
-	SendFriendRes(nil, res.From, r, d)
+	SendMsg(nil, res.From, r, d, aproto.ADDFRIENDRES_TYPE)
 }
 
 func (s *relationServer) handlerAddFriendReq(con *connectServer, r *aproto.ServiceRequest, d []byte) {
@@ -51,6 +77,8 @@ func (s *relationServer) handlerAddFriendReq(con *connectServer, r *aproto.Servi
 		golog.Error(err)
 		return
 	}
+
+	golog.Info("handlerAddFriendReq", "from:", req.From, "friend:", req.Friend)
 
 	hnl := storage.GetStorage().GetRelationHandler(req.From)
 
@@ -88,7 +116,7 @@ func (s *relationServer) handlerAddFriendReq(con *connectServer, r *aproto.Servi
 				return
 			}
 
-			SendFriendRes(con, req.From, r, res)
+			SendMsg(con, req.From, r, res, aproto.ADDFRIENDRES_TYPE)
 			return
 		}
 	}
@@ -113,7 +141,7 @@ func (s *relationServer) handlerAddFriendReq(con *connectServer, r *aproto.Servi
 
 	if online {
 		//直接发送交友申请
-		SendFriendReq(nil, req.Friend, r, d)
+		SendMsg(nil, req.Friend, r, d, aproto.ADDFRIENDREQ_TYPE)
 	}
 
 	//给予等待回复
@@ -122,5 +150,6 @@ func (s *relationServer) handlerAddFriendReq(con *connectServer, r *aproto.Servi
 		golog.Error(err)
 		return
 	}
-	SendFriendRes(con, req.From, r, res)
+
+	SendMsg(con, req.From, r, res, aproto.ADDFRIENDRES_TYPE)
 }
