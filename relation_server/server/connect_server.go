@@ -126,6 +126,11 @@ func (s *connectServer) handlerPeerCmd(req *aproto.ServiceRequest) {
 	}
 
 	switch pg.PacketType {
-
+	case aproto.ADDFRIENDREQ_TYPE:
+	case aproto.ADDFRIENDRES_TYPE:
+	case aproto.DELFRIENDREQ_TYPE:
+	case aproto.ADDBLACKREQ_TYPE:
+	case aproto.DELBLACKREQ_TYPE:
+	case aproto.GETRELATIONMSGREQ_TYPE:
 	}
 }
