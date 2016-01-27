@@ -14,6 +14,8 @@
 		RelationPacket
 		AddFriendReq
 		AddFriendRes
+		DelFriendReq
+		DelFriendRes
 		AddBlackReq
 		AddBlackRes
 		DelBlackReq
@@ -33,7 +35,6 @@
 		SendPeerMessageRes
 		GetPeerMessageReq
 		GetPeerMessageRes
-		PushPeerMessageReq
 		RecvPeerMessageRes
 		PeerPacket
 */
@@ -80,6 +81,26 @@ type AddFriendRes struct {
 func (m *AddFriendRes) Reset()         { *m = AddFriendRes{} }
 func (m *AddFriendRes) String() string { return proto1.CompactTextString(m) }
 func (*AddFriendRes) ProtoMessage()    {}
+
+type DelFriendReq struct {
+	From   string `protobuf:"bytes,2,opt,name=from,proto3" json:"from,omitempty"`
+	Friend string `protobuf:"bytes,3,opt,name=friend,proto3" json:"friend,omitempty"`
+}
+
+func (m *DelFriendReq) Reset()         { *m = DelFriendReq{} }
+func (m *DelFriendReq) String() string { return proto1.CompactTextString(m) }
+func (*DelFriendReq) ProtoMessage()    {}
+
+type DelFriendRes struct {
+	Id     int64  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	From   string `protobuf:"bytes,2,opt,name=from,proto3" json:"from,omitempty"`
+	Friend string `protobuf:"bytes,3,opt,name=friend,proto3" json:"friend,omitempty"`
+	Status int32  `protobuf:"varint,4,opt,name=status,proto3" json:"status,omitempty"`
+}
+
+func (m *DelFriendRes) Reset()         { *m = DelFriendRes{} }
+func (m *DelFriendRes) String() string { return proto1.CompactTextString(m) }
+func (*DelFriendRes) ProtoMessage()    {}
 
 type AddBlackReq struct {
 	From  string `protobuf:"bytes,2,opt,name=from,proto3" json:"from,omitempty"`
@@ -134,6 +155,8 @@ func init() {
 	proto1.RegisterType((*RelationPacket)(nil), "proto.RelationPacket")
 	proto1.RegisterType((*AddFriendReq)(nil), "proto.AddFriendReq")
 	proto1.RegisterType((*AddFriendRes)(nil), "proto.AddFriendRes")
+	proto1.RegisterType((*DelFriendReq)(nil), "proto.DelFriendReq")
+	proto1.RegisterType((*DelFriendRes)(nil), "proto.DelFriendRes")
 	proto1.RegisterType((*AddBlackReq)(nil), "proto.AddBlackReq")
 	proto1.RegisterType((*AddBlackRes)(nil), "proto.AddBlackRes")
 	proto1.RegisterType((*DelBlackReq)(nil), "proto.DelBlackReq")
@@ -225,6 +248,76 @@ func (m *AddFriendRes) Marshal() (data []byte, err error) {
 }
 
 func (m *AddFriendRes) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Id != 0 {
+		data[i] = 0x8
+		i++
+		i = encodeVarintRelation(data, i, uint64(m.Id))
+	}
+	if len(m.From) > 0 {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRelation(data, i, uint64(len(m.From)))
+		i += copy(data[i:], m.From)
+	}
+	if len(m.Friend) > 0 {
+		data[i] = 0x1a
+		i++
+		i = encodeVarintRelation(data, i, uint64(len(m.Friend)))
+		i += copy(data[i:], m.Friend)
+	}
+	if m.Status != 0 {
+		data[i] = 0x20
+		i++
+		i = encodeVarintRelation(data, i, uint64(m.Status))
+	}
+	return i, nil
+}
+
+func (m *DelFriendReq) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *DelFriendReq) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.From) > 0 {
+		data[i] = 0x12
+		i++
+		i = encodeVarintRelation(data, i, uint64(len(m.From)))
+		i += copy(data[i:], m.From)
+	}
+	if len(m.Friend) > 0 {
+		data[i] = 0x1a
+		i++
+		i = encodeVarintRelation(data, i, uint64(len(m.Friend)))
+		i += copy(data[i:], m.Friend)
+	}
+	return i, nil
+}
+
+func (m *DelFriendRes) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *DelFriendRes) MarshalTo(data []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
@@ -491,6 +584,40 @@ func (m *AddFriendReq) Size() (n int) {
 }
 
 func (m *AddFriendRes) Size() (n int) {
+	var l int
+	_ = l
+	if m.Id != 0 {
+		n += 1 + sovRelation(uint64(m.Id))
+	}
+	l = len(m.From)
+	if l > 0 {
+		n += 1 + l + sovRelation(uint64(l))
+	}
+	l = len(m.Friend)
+	if l > 0 {
+		n += 1 + l + sovRelation(uint64(l))
+	}
+	if m.Status != 0 {
+		n += 1 + sovRelation(uint64(m.Status))
+	}
+	return n
+}
+
+func (m *DelFriendReq) Size() (n int) {
+	var l int
+	_ = l
+	l = len(m.From)
+	if l > 0 {
+		n += 1 + l + sovRelation(uint64(l))
+	}
+	l = len(m.Friend)
+	if l > 0 {
+		n += 1 + l + sovRelation(uint64(l))
+	}
+	return n
+}
+
+func (m *DelFriendRes) Size() (n int) {
 	var l int
 	_ = l
 	if m.Id != 0 {
@@ -885,6 +1012,260 @@ func (m *AddFriendRes) Unmarshal(data []byte) error {
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: AddFriendRes: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			m.Id = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRelation
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.Id |= (int64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRelation
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthRelation
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.From = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Friend", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRelation
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthRelation
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Friend = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
+			}
+			m.Status = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRelation
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.Status |= (int32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipRelation(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthRelation
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *DelFriendReq) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowRelation
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: DelFriendReq: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: DelFriendReq: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRelation
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthRelation
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.From = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Friend", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRelation
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthRelation
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Friend = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipRelation(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthRelation
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *DelFriendRes) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowRelation
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: DelFriendRes: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: DelFriendRes: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

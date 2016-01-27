@@ -7,21 +7,6 @@ import (
 	"time"
 )
 
-//relation packet type
-const (
-	ADDFRIENDREQ_TYPE = iota + 1
-	ADDFRIENDRES_TYPE
-	DELFRIENDREQ_TYPE
-	DELFRIEDNRES_TYPE
-	ADDBLACKREQ_TYPE
-	ADDBLACKRES_TYPE
-	DELBLACKREQ_TYPE
-	DELBLACKRES_TYPE
-	GETRELATIONMSGREQ_TYPE
-	GETRELATIONMSGRES_TYPE
-	RECVRELATIONMSGRES_TYPE
-)
-
 func UnmarshalLoginReq(d []byte) (*LoginRequest, error) {
 	var req LoginRequest
 	err := req.Unmarshal(d)
