@@ -101,16 +101,17 @@ func MarshalGetPMsgReq(cid string) ([]byte, error) {
 	return req.Marshal()
 }
 
-func MarshalGetPMsgRes(msgs []*PeerMessage) ([]byte, error) {
+func MarshalGetPMsgRes(msgs []*PeerPacket) ([]byte, error) {
 	var res GetPeerMessageRes
 	res.Msgs = msgs
 
 	return res.Marshal()
 }
 
-func MarshalPeerPacket(t int32, data []byte) ([]byte, error) {
+func MarshalPeerPacket(t int32, id int64, data []byte) ([]byte, error) {
 	var pp PeerPacket
 	pp.PacketType = t
+	pp.Id = id
 	pp.Data = data
 
 	return pp.Marshal()
@@ -127,12 +128,11 @@ func MarshalSendMsgReq(from string, to string, data []byte) ([]byte, error) {
 	return req.Marshal()
 }
 
-func MarshalSendPMsgRes(cid string, status int32, sn string, id int64) ([]byte, error) {
+func MarshalSendPMsgRes(cid string, status int32, sn string) ([]byte, error) {
 	var smsg SendPeerMessageRes
 	smsg.Cid = cid
 	smsg.Status = status
 	smsg.Sn = sn
-	smsg.Id = id
 
 	return smsg.Marshal()
 }
