@@ -110,12 +110,22 @@ func UnmarshalRelationpacket(d []byte) (*RelationPacket, error) {
 	return &pa, nil
 }
 
-func MarshalRelationPacket(ty int32, d []byte) ([]byte, error) {
+func MarshalRelationPacket(ty int32, id int64, d []byte) ([]byte, error) {
 	var pa RelationPacket
 	pa.PacketType = ty
+	pa.Id = id
 	pa.Data = d
 
 	return pa.Marshal()
+}
+
+func MarshalRelationPacketEx(ty int32, id int64, d []byte) *RelationPacket {
+	var pa RelationPacket
+	pa.PacketType = ty
+	pa.Id = id
+	pa.Data = d
+
+	return &pa
 }
 
 func MarshalDelBlackRes(from string, black string, status int32) ([]byte, error) {
@@ -169,9 +179,8 @@ func MarshalDelFriendRes(from string, friend string, status int32) ([]byte, erro
 	return res.Marshal()
 }
 
-func MarshalAddFriendReq(id int64, from string, friend string, d []byte) ([]byte, error) {
+func MarshalAddFriendReq(from string, friend string, d []byte) ([]byte, error) {
 	var req AddFriendReq
-	req.Id = id
 	req.From = from
 	req.Friend = friend
 	req.Data = d
@@ -179,9 +188,8 @@ func MarshalAddFriendReq(id int64, from string, friend string, d []byte) ([]byte
 	return req.Marshal()
 }
 
-func MarshalAddFriendRes(id int64, from string, friend string, s int32) ([]byte, error) {
+func MarshalAddFriendRes(from string, friend string, s int32) ([]byte, error) {
 	var res AddFriendRes
-	res.Id = id
 	res.From = from
 	res.Friend = friend
 	res.Status = s

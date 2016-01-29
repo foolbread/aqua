@@ -20,6 +20,8 @@
 		AddBlackRes
 		DelBlackReq
 		DelBlackRes
+		GetRelationPacketReq
+		GetRelationPacketRes
 		RecvRelationPacket
 		LoginRequest
 		LoginResponse
@@ -53,7 +55,8 @@ var _ = math.Inf
 
 type RelationPacket struct {
 	PacketType int32  `protobuf:"varint,1,opt,name=packet_type,proto3" json:"packet_type,omitempty"`
-	Data       []byte `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
+	Id         int64  `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
+	Data       []byte `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
 }
 
 func (m *RelationPacket) Reset()         { *m = RelationPacket{} }
@@ -61,10 +64,9 @@ func (m *RelationPacket) String() string { return proto1.CompactTextString(m) }
 func (*RelationPacket) ProtoMessage()    {}
 
 type AddFriendReq struct {
-	Id     int64  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	From   string `protobuf:"bytes,2,opt,name=from,proto3" json:"from,omitempty"`
-	Friend string `protobuf:"bytes,3,opt,name=friend,proto3" json:"friend,omitempty"`
-	Data   []byte `protobuf:"bytes,4,opt,name=data,proto3" json:"data,omitempty"`
+	From   string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	Friend string `protobuf:"bytes,2,opt,name=friend,proto3" json:"friend,omitempty"`
+	Data   []byte `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
 }
 
 func (m *AddFriendReq) Reset()         { *m = AddFriendReq{} }
@@ -72,10 +74,9 @@ func (m *AddFriendReq) String() string { return proto1.CompactTextString(m) }
 func (*AddFriendReq) ProtoMessage()    {}
 
 type AddFriendRes struct {
-	Id     int64  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	From   string `protobuf:"bytes,2,opt,name=from,proto3" json:"from,omitempty"`
-	Friend string `protobuf:"bytes,3,opt,name=friend,proto3" json:"friend,omitempty"`
-	Status int32  `protobuf:"varint,4,opt,name=status,proto3" json:"status,omitempty"`
+	From   string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	Friend string `protobuf:"bytes,2,opt,name=friend,proto3" json:"friend,omitempty"`
+	Status int32  `protobuf:"varint,3,opt,name=status,proto3" json:"status,omitempty"`
 }
 
 func (m *AddFriendRes) Reset()         { *m = AddFriendRes{} }
@@ -139,6 +140,29 @@ func (m *DelBlackRes) Reset()         { *m = DelBlackRes{} }
 func (m *DelBlackRes) String() string { return proto1.CompactTextString(m) }
 func (*DelBlackRes) ProtoMessage()    {}
 
+type GetRelationPacketReq struct {
+	Cid string `protobuf:"bytes,1,opt,name=cid,proto3" json:"cid,omitempty"`
+}
+
+func (m *GetRelationPacketReq) Reset()         { *m = GetRelationPacketReq{} }
+func (m *GetRelationPacketReq) String() string { return proto1.CompactTextString(m) }
+func (*GetRelationPacketReq) ProtoMessage()    {}
+
+type GetRelationPacketRes struct {
+	Msgs []*RelationPacket `protobuf:"bytes,1,rep,name=msgs" json:"msgs,omitempty"`
+}
+
+func (m *GetRelationPacketRes) Reset()         { *m = GetRelationPacketRes{} }
+func (m *GetRelationPacketRes) String() string { return proto1.CompactTextString(m) }
+func (*GetRelationPacketRes) ProtoMessage()    {}
+
+func (m *GetRelationPacketRes) GetMsgs() []*RelationPacket {
+	if m != nil {
+		return m.Msgs
+	}
+	return nil
+}
+
 type RecvRelationPacket struct {
 	Cid string  `protobuf:"bytes,1,opt,name=cid,proto3" json:"cid,omitempty"`
 	Id  []int64 `protobuf:"varint,2,rep,name=id" json:"id,omitempty"`
@@ -158,6 +182,8 @@ func init() {
 	proto1.RegisterType((*AddBlackRes)(nil), "proto.AddBlackRes")
 	proto1.RegisterType((*DelBlackReq)(nil), "proto.DelBlackReq")
 	proto1.RegisterType((*DelBlackRes)(nil), "proto.DelBlackRes")
+	proto1.RegisterType((*GetRelationPacketReq)(nil), "proto.GetRelationPacketReq")
+	proto1.RegisterType((*GetRelationPacketRes)(nil), "proto.GetRelationPacketRes")
 	proto1.RegisterType((*RecvRelationPacket)(nil), "proto.RecvRelationPacket")
 }
 func (m *RelationPacket) Marshal() (data []byte, err error) {
@@ -180,9 +206,14 @@ func (m *RelationPacket) MarshalTo(data []byte) (int, error) {
 		i++
 		i = encodeVarintRelation(data, i, uint64(m.PacketType))
 	}
+	if m.Id != 0 {
+		data[i] = 0x10
+		i++
+		i = encodeVarintRelation(data, i, uint64(m.Id))
+	}
 	if m.Data != nil {
 		if len(m.Data) > 0 {
-			data[i] = 0x12
+			data[i] = 0x1a
 			i++
 			i = encodeVarintRelation(data, i, uint64(len(m.Data)))
 			i += copy(data[i:], m.Data)
@@ -206,26 +237,21 @@ func (m *AddFriendReq) MarshalTo(data []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Id != 0 {
-		data[i] = 0x8
-		i++
-		i = encodeVarintRelation(data, i, uint64(m.Id))
-	}
 	if len(m.From) > 0 {
-		data[i] = 0x12
+		data[i] = 0xa
 		i++
 		i = encodeVarintRelation(data, i, uint64(len(m.From)))
 		i += copy(data[i:], m.From)
 	}
 	if len(m.Friend) > 0 {
-		data[i] = 0x1a
+		data[i] = 0x12
 		i++
 		i = encodeVarintRelation(data, i, uint64(len(m.Friend)))
 		i += copy(data[i:], m.Friend)
 	}
 	if m.Data != nil {
 		if len(m.Data) > 0 {
-			data[i] = 0x22
+			data[i] = 0x1a
 			i++
 			i = encodeVarintRelation(data, i, uint64(len(m.Data)))
 			i += copy(data[i:], m.Data)
@@ -249,25 +275,20 @@ func (m *AddFriendRes) MarshalTo(data []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Id != 0 {
-		data[i] = 0x8
-		i++
-		i = encodeVarintRelation(data, i, uint64(m.Id))
-	}
 	if len(m.From) > 0 {
-		data[i] = 0x12
+		data[i] = 0xa
 		i++
 		i = encodeVarintRelation(data, i, uint64(len(m.From)))
 		i += copy(data[i:], m.From)
 	}
 	if len(m.Friend) > 0 {
-		data[i] = 0x1a
+		data[i] = 0x12
 		i++
 		i = encodeVarintRelation(data, i, uint64(len(m.Friend)))
 		i += copy(data[i:], m.Friend)
 	}
 	if m.Status != 0 {
-		data[i] = 0x20
+		data[i] = 0x18
 		i++
 		i = encodeVarintRelation(data, i, uint64(m.Status))
 	}
@@ -469,6 +490,60 @@ func (m *DelBlackRes) MarshalTo(data []byte) (int, error) {
 	return i, nil
 }
 
+func (m *GetRelationPacketReq) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *GetRelationPacketReq) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Cid) > 0 {
+		data[i] = 0xa
+		i++
+		i = encodeVarintRelation(data, i, uint64(len(m.Cid)))
+		i += copy(data[i:], m.Cid)
+	}
+	return i, nil
+}
+
+func (m *GetRelationPacketRes) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *GetRelationPacketRes) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Msgs) > 0 {
+		for _, msg := range m.Msgs {
+			data[i] = 0xa
+			i++
+			i = encodeVarintRelation(data, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(data[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	return i, nil
+}
+
 func (m *RecvRelationPacket) Marshal() (data []byte, err error) {
 	size := m.Size()
 	data = make([]byte, size)
@@ -533,6 +608,9 @@ func (m *RelationPacket) Size() (n int) {
 	if m.PacketType != 0 {
 		n += 1 + sovRelation(uint64(m.PacketType))
 	}
+	if m.Id != 0 {
+		n += 1 + sovRelation(uint64(m.Id))
+	}
 	if m.Data != nil {
 		l = len(m.Data)
 		if l > 0 {
@@ -545,9 +623,6 @@ func (m *RelationPacket) Size() (n int) {
 func (m *AddFriendReq) Size() (n int) {
 	var l int
 	_ = l
-	if m.Id != 0 {
-		n += 1 + sovRelation(uint64(m.Id))
-	}
 	l = len(m.From)
 	if l > 0 {
 		n += 1 + l + sovRelation(uint64(l))
@@ -568,9 +643,6 @@ func (m *AddFriendReq) Size() (n int) {
 func (m *AddFriendRes) Size() (n int) {
 	var l int
 	_ = l
-	if m.Id != 0 {
-		n += 1 + sovRelation(uint64(m.Id))
-	}
 	l = len(m.From)
 	if l > 0 {
 		n += 1 + l + sovRelation(uint64(l))
@@ -678,6 +750,28 @@ func (m *DelBlackRes) Size() (n int) {
 	return n
 }
 
+func (m *GetRelationPacketReq) Size() (n int) {
+	var l int
+	_ = l
+	l = len(m.Cid)
+	if l > 0 {
+		n += 1 + l + sovRelation(uint64(l))
+	}
+	return n
+}
+
+func (m *GetRelationPacketRes) Size() (n int) {
+	var l int
+	_ = l
+	if len(m.Msgs) > 0 {
+		for _, e := range m.Msgs {
+			l = e.Size()
+			n += 1 + l + sovRelation(uint64(l))
+		}
+	}
+	return n
+}
+
 func (m *RecvRelationPacket) Size() (n int) {
 	var l int
 	_ = l
@@ -755,6 +849,25 @@ func (m *RelationPacket) Unmarshal(data []byte) error {
 				}
 			}
 		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			m.Id = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRelation
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.Id |= (int64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Data", wireType)
 			}
@@ -833,25 +946,6 @@ func (m *AddFriendReq) Unmarshal(data []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
-			}
-			m.Id = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowRelation
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				m.Id |= (int64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
 			}
@@ -880,7 +974,7 @@ func (m *AddFriendReq) Unmarshal(data []byte) error {
 			}
 			m.From = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 3:
+		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Friend", wireType)
 			}
@@ -909,7 +1003,7 @@ func (m *AddFriendReq) Unmarshal(data []byte) error {
 			}
 			m.Friend = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 4:
+		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Data", wireType)
 			}
@@ -988,25 +1082,6 @@ func (m *AddFriendRes) Unmarshal(data []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
-			}
-			m.Id = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowRelation
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				m.Id |= (int64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
 			}
@@ -1035,7 +1110,7 @@ func (m *AddFriendRes) Unmarshal(data []byte) error {
 			}
 			m.From = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 3:
+		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Friend", wireType)
 			}
@@ -1064,7 +1139,7 @@ func (m *AddFriendRes) Unmarshal(data []byte) error {
 			}
 			m.Friend = string(data[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 4:
+		case 3:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
 			}
@@ -1788,6 +1863,166 @@ func (m *DelBlackRes) Unmarshal(data []byte) error {
 					break
 				}
 			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipRelation(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthRelation
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *GetRelationPacketReq) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowRelation
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: GetRelationPacketReq: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: GetRelationPacketReq: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Cid", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRelation
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthRelation
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Cid = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipRelation(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthRelation
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *GetRelationPacketRes) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowRelation
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: GetRelationPacketRes: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: GetRelationPacketRes: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Msgs", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRelation
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRelation
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Msgs = append(m.Msgs, &RelationPacket{})
+			if err := m.Msgs[len(m.Msgs)-1].Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRelation(data[iNdEx:])
