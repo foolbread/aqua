@@ -117,6 +117,15 @@ func MarshalPeerPacket(t int32, id int64, data []byte) ([]byte, error) {
 	return pp.Marshal()
 }
 
+func MarshalPeerPacketEx(t int32, id int64, data []byte) *PeerPacket {
+	var pp PeerPacket
+	pp.PacketType = t
+	pp.Id = id
+	pp.Data = data
+
+	return &pp
+}
+
 func MarshalSendMsgReq(from string, to string, data []byte) ([]byte, error) {
 	var req SendPeerMessageReq
 	req.Msg = new(PeerMessage)

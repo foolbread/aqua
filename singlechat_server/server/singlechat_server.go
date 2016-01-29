@@ -22,13 +22,13 @@ func newSinglechatServer() *singlechatServer {
 	return r
 }
 
-func (s *singlechatServer) handlerRecvMsgRes(con *connectServer, r *aproto.ServiceRequest, d []byte) {
-	req, err := aproto.UnmarshalRecvMsgRes(d)
+func (s *singlechatServer) handlerRecvMsgRes(con *connectServer, r *aproto.ServiceRequest, pp *aproto.PeerPacket) {
+	req, err := aproto.UnmarshalRecvMsgRes(pp.Data)
 	if err != nil {
 		golog.Error(err)
 		return
 	}
-	golog.Info("handlerRecvMsgRes", "cid:", req.Cid)
+	golog.Info("handlerRecvMsgRes", "cid:", req.Cid, "msg_id:", req.Id)
 
 	hnl := storage.GetStorage().GetSingleHandler(req.Cid)
 
@@ -38,8 +38,8 @@ func (s *singlechatServer) handlerRecvMsgRes(con *connectServer, r *aproto.Servi
 	}
 }
 
-func (s *singlechatServer) handlerGetMsgReq(con *connectServer, r *aproto.ServiceRequest, d []byte) {
-	req, err := aproto.UnmarshalGetPMsgReq(d)
+func (s *singlechatServer) handlerGetMsgReq(con *connectServer, r *aproto.ServiceRequest, pp *aproto.PeerPacket) {
+	req, err := aproto.UnmarshalGetPMsgReq(pp.Data)
 	if err != nil {
 		golog.Error(err)
 		return
@@ -57,7 +57,7 @@ func (s *singlechatServer) handlerGetMsgReq(con *connectServer, r *aproto.Servic
 
 	//每10条消息一个包
 	cnt := 0
-	var ms [MESSAGES_MAX]*aproto.PeerMessage
+	var ms [MESSAGES_MAX]*aproto.PeerPacket
 	for _, v := range msgs {
 		data, err := base64.StdEncoding.DecodeString(v)
 		if err != nil {
@@ -65,13 +65,13 @@ func (s *singlechatServer) handlerGetMsgReq(con *connectServer, r *aproto.Servic
 			continue
 		}
 
-		rq, err := aproto.UnmarshalSendPMsgReq(data)
+		rq, err := aproto.UnmarshalPeerPacket(data)
 		if err != nil {
 			golog.Error(err)
 			continue
 		}
 
-		ms[cnt] = rq.Msg
+		ms[cnt] = rq
 		cnt++
 
 		if cnt >= MESSAGES_MAX {
@@ -82,7 +82,9 @@ func (s *singlechatServer) handlerGetMsgReq(con *connectServer, r *aproto.Servic
 				continue
 			}
 
-			SendMsg(con, req.Cid, r, res, aproto.GETPMSGRES_TYPE)
+			pr := aproto.MarshalPeerPacketEx(aproto.GETPMSGRES_TYPE, 0, res)
+
+			SendMsg(con, req.Cid, r, pr)
 		}
 	} //end for
 
@@ -93,12 +95,14 @@ func (s *singlechatServer) handlerGetMsgReq(con *connectServer, r *aproto.Servic
 			return
 		}
 
-		SendMsg(con, req.Cid, r, res, aproto.GETPMSGRES_TYPE)
+		pr := aproto.MarshalPeerPacketEx(aproto.GETPMSGRES_TYPE, 0, res)
+
+		SendMsg(con, req.Cid, r, pr)
 	}
 }
 
-func (s *singlechatServer) handlerSendPMsgReq(con *connectServer, r *aproto.ServiceRequest, d []byte) {
-	req, err := aproto.UnmarshalSendPMsgReq(d)
+func (s *singlechatServer) handlerSendPMsgReq(con *connectServer, r *aproto.ServiceRequest, pp *aproto.PeerPacket) {
+	req, err := aproto.UnmarshalSendPMsgReq(pp.Data)
 	if err != nil {
 		golog.Error(err)
 		return
@@ -123,13 +127,15 @@ func (s *singlechatServer) handlerSendPMsgReq(con *connectServer, r *aproto.Serv
 
 		if l > 10 {
 			//用户消息队列已满，发送错误信息
-			res, err := aproto.MarshalSendPMsgRes(req.Msg.From, aproto.MESSAGE_FULL, req.Msg.Sn, req.Msg.Id)
+			res, err := aproto.MarshalSendPMsgRes(req.Msg.From, aproto.MESSAGE_FULL, req.Msg.Sn)
 			if err != nil {
 				golog.Error(err)
 				return
 			}
 
-			SendMsg(con, req.Msg.From, r, res, aproto.SENDPMSGRES_TYPE)
+			pr := aproto.MarshalPeerPacketEx(aproto.SENDPMSGRES_TYPE, 0, res)
+
+			SendMsg(con, req.Msg.From, r, pr)
 			return
 		}
 	}
@@ -140,10 +146,9 @@ func (s *singlechatServer) handlerSendPMsgReq(con *connectServer, r *aproto.Serv
 		golog.Error(err)
 		return
 	}
+	pp.Id = int64(id)
 
-	req.Msg.Id = int64(id)
-
-	msg, err := req.Marshal()
+	msg, err := pp.Marshal()
 	if err != nil {
 		golog.Error(err)
 		return
@@ -153,28 +158,32 @@ func (s *singlechatServer) handlerSendPMsgReq(con *connectServer, r *aproto.Serv
 	hnl.AddPeerMsg(req.Msg.To, base64.StdEncoding.EncodeToString(msg), id)
 
 	if exist {
-		SendMsg(nil, req.Msg.To, r, d, aproto.SENDPMSGREQ_TYPE)
+		SendMsg(nil, req.Msg.To, r, pp)
 	}
 
-	res, err := aproto.MarshalSendPMsgRes(req.Msg.From, aproto.STATUS_OK, req.Msg.Sn, req.Msg.Id)
+	res, err := aproto.MarshalSendPMsgRes(req.Msg.From, aproto.STATUS_OK, req.Msg.Sn)
 	if err != nil {
 		golog.Error(err)
 		return
 	}
 
-	SendMsg(con, req.Msg.From, r, res, aproto.SENDPMSGRES_TYPE)
+	pr := aproto.MarshalPeerPacketEx(aproto.SENDPMSGRES_TYPE, int64(id), res)
+
+	SendMsg(con, req.Msg.From, r, pr)
 }
 
-func (s *singlechatServer) handlerSendPMsgRes(con *connectServer, r *aproto.ServiceRequest, d []byte) {
-	res, err := aproto.UnmarshalSendPMsgRes(d)
+func (s *singlechatServer) handlerSendPMsgRes(con *connectServer, r *aproto.ServiceRequest, pp *aproto.PeerPacket) {
+	res, err := aproto.UnmarshalSendPMsgRes(pp.Data)
 	if err != nil {
 		golog.Error(err)
 		return
 	}
+
+	golog.Info("handlerSendPMsgRes", "cid:", res.Cid, "msg_id:", pp.Id)
 
 	hnl := storage.GetStorage().GetSingleHandler(res.Cid)
 
-	err = hnl.DelPeerMsg(res.Cid, res.Id)
+	err = hnl.DelPeerMsg(res.Cid, pp.Id)
 	if err != nil {
 		golog.Error(err)
 	}

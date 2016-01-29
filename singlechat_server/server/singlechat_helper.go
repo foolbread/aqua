@@ -63,16 +63,16 @@ func SendServiceMsgEx(cid string, pp []byte, sn string) {
 
 }
 
-func SendMsg(con *connectServer, cid string, r *aproto.ServiceRequest, msg []byte, ty int32) {
-	pp, err := aproto.MarshalPeerPacket(ty, msg)
+func SendMsg(con *connectServer, cid string, r *aproto.ServiceRequest, pp *aproto.PeerPacket) {
+	data, err := pp.Marshal()
 	if err != nil {
 		golog.Error(err)
 		return
 	}
 
 	if con != nil {
-		SendServiceMsg(con, r, pp)
+		SendServiceMsg(con, r, data)
 	} else {
-		SendServiceMsgEx(cid, pp, r.Sn)
+		SendServiceMsgEx(cid, data, r.Sn)
 	}
 }
