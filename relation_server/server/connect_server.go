@@ -110,7 +110,7 @@ func (s *connectServer) ReadFromCon() {
 			continue
 		}
 
-		go s.handlerPeerCmd(req)
+		go s.handlerRelationCmd(req)
 	}
 }
 
@@ -118,8 +118,8 @@ func (s *connectServer) SendToCon(d []byte) error {
 	return anet.SendPacket(s.con, d)
 }
 
-func (s *connectServer) handlerPeerCmd(req *aproto.ServiceRequest) {
-	pg, err := aproto.UnmarshalPeerPacket(req.Payload)
+func (s *connectServer) handlerRelationCmd(req *aproto.ServiceRequest) {
+	pg, err := aproto.UnmarshalRelationpacket(req.Payload)
 	if err != nil {
 		golog.Error(err)
 		return
@@ -127,10 +127,15 @@ func (s *connectServer) handlerPeerCmd(req *aproto.ServiceRequest) {
 
 	switch pg.PacketType {
 	case aproto.ADDFRIENDREQ_TYPE:
+		g_relation.handlerAddFriendReq(s, req, pg)
 	case aproto.ADDFRIENDRES_TYPE:
+		g_relation.handlerAddFriendRes(s, req, pg)
 	case aproto.DELFRIENDREQ_TYPE:
+		g_relation.handlerDelFriendReq(s, req, pg)
 	case aproto.ADDBLACKREQ_TYPE:
+		g_relation.handlerAddBlackReq(s, req, pg)
 	case aproto.DELBLACKREQ_TYPE:
+		g_relation.handlerDelBlackReq(s, req, pg)
 	case aproto.GETRELATIONMSGREQ_TYPE:
 	}
 }

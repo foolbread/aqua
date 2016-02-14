@@ -112,13 +112,13 @@ func (s *singlechatServer) handlerSendPMsgReq(con *connectServer, r *aproto.Serv
 
 	hnl := storage.GetStorage().GetSingleHandler(req.Msg.To)
 	//判断接收方是否在线
-	exist, err := hnl.IsExistSession(req.Msg.To)
+	online, err := hnl.IsExistSession(req.Msg.To)
 	if err != nil {
 		golog.Error(err)
 		return
 	}
 
-	if !exist {
+	if !online {
 		l, err := hnl.GetPeerMsgsSize(req.Msg.To)
 		if err != nil {
 			golog.Error(err)
@@ -157,7 +157,7 @@ func (s *singlechatServer) handlerSendPMsgReq(con *connectServer, r *aproto.Serv
 	//把消息添加到消息队列
 	hnl.AddPeerMsg(req.Msg.To, base64.StdEncoding.EncodeToString(msg), id)
 
-	if exist {
+	if online {
 		SendMsg(nil, req.Msg.To, r, pp)
 	}
 
