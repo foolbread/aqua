@@ -29,7 +29,7 @@ message GetPeerMessageRes{
 	repeated PeerPacket msgs = 1;
 }
 
-message RecvPeerMessageRes{
+message RecvPeerMessage{
 	string cid = 1;
 	repeated int64 id = 2;//recv message id
 }

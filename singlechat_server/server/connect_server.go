@@ -131,8 +131,8 @@ func (s *connectServer) handlerPeerCmd(req *aproto.ServiceRequest) {
 	case aproto.SENDPMSGRES_TYPE:
 		g_singlechat.handlerSendPMsgRes(s, req, pg)
 	case aproto.GETPMSGREQ_TYPE:
-		g_singlechat.handlerGetMsgReq(s, req, pg)
+		g_singlechat.handlerGetPMsgReq(s, req, pg)
 	case aproto.RECVPMSGRES_TYPE:
-		g_singlechat.handlerRecvMsgRes(s, req, pg)
+		g_singlechat.handlerRecvPMsgRes(s, req, pg)
 	}
 }

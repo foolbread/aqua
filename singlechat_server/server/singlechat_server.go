@@ -22,8 +22,8 @@ func newSinglechatServer() *singlechatServer {
 	return r
 }
 
-func (s *singlechatServer) handlerRecvMsgRes(con *connectServer, r *aproto.ServiceRequest, pp *aproto.PeerPacket) {
-	req, err := aproto.UnmarshalRecvMsgRes(pp.Data)
+func (s *singlechatServer) handlerRecvPMsgRes(con *connectServer, r *aproto.ServiceRequest, pp *aproto.PeerPacket) {
+	req, err := aproto.UnmarshalRecvPMsg(pp.Data)
 	if err != nil {
 		golog.Error(err)
 		return
@@ -38,7 +38,7 @@ func (s *singlechatServer) handlerRecvMsgRes(con *connectServer, r *aproto.Servi
 	}
 }
 
-func (s *singlechatServer) handlerGetMsgReq(con *connectServer, r *aproto.ServiceRequest, pp *aproto.PeerPacket) {
+func (s *singlechatServer) handlerGetPMsgReq(con *connectServer, r *aproto.ServiceRequest, pp *aproto.PeerPacket) {
 	req, err := aproto.UnmarshalGetPMsgReq(pp.Data)
 	if err != nil {
 		golog.Error(err)

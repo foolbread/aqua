@@ -66,8 +66,8 @@ func UnmarshalGetPMsgReq(d []byte) (*GetPeerMessageReq, error) {
 	return &req, nil
 }
 
-func UnmarshalRecvMsgRes(d []byte) (*RecvPeerMessageRes, error) {
-	var res RecvPeerMessageRes
+func UnmarshalRecvPMsg(d []byte) (*RecvPeerMessage, error) {
+	var res RecvPeerMessage
 	err := res.Unmarshal(d)
 	if err != nil {
 		return nil, err
@@ -86,8 +86,8 @@ func UnmarshalGetPMsgRes(d []byte) (*GetPeerMessageRes, error) {
 	return &res, nil
 }
 
-func MarshalRecvMsgRes(cid string, ids []int64) ([]byte, error) {
-	var res RecvPeerMessageRes
+func MarshalRecvPMsg(cid string, ids []int64) ([]byte, error) {
+	var res RecvPeerMessage
 	res.Cid = cid
 	res.Id = ids
 

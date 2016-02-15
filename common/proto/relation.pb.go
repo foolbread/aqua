@@ -37,7 +37,7 @@
 		SendPeerMessageRes
 		GetPeerMessageReq
 		GetPeerMessageRes
-		RecvPeerMessageRes
+		RecvPeerMessage
 		PeerPacket
 */
 package proto

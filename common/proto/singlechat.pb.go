@@ -76,14 +76,14 @@ func (m *GetPeerMessageRes) GetMsgs() []*PeerPacket {
 	return nil
 }
 
-type RecvPeerMessageRes struct {
+type RecvPeerMessage struct {
 	Cid string  `protobuf:"bytes,1,opt,name=cid,proto3" json:"cid,omitempty"`
 	Id  []int64 `protobuf:"varint,2,rep,name=id" json:"id,omitempty"`
 }
 
-func (m *RecvPeerMessageRes) Reset()         { *m = RecvPeerMessageRes{} }
-func (m *RecvPeerMessageRes) String() string { return proto1.CompactTextString(m) }
-func (*RecvPeerMessageRes) ProtoMessage()    {}
+func (m *RecvPeerMessage) Reset()         { *m = RecvPeerMessage{} }
+func (m *RecvPeerMessage) String() string { return proto1.CompactTextString(m) }
+func (*RecvPeerMessage) ProtoMessage()    {}
 
 type PeerPacket struct {
 	PacketType int32  `protobuf:"varint,1,opt,name=packet_type,proto3" json:"packet_type,omitempty"`
@@ -101,7 +101,7 @@ func init() {
 	proto1.RegisterType((*SendPeerMessageRes)(nil), "proto.SendPeerMessageRes")
 	proto1.RegisterType((*GetPeerMessageReq)(nil), "proto.GetPeerMessageReq")
 	proto1.RegisterType((*GetPeerMessageRes)(nil), "proto.GetPeerMessageRes")
-	proto1.RegisterType((*RecvPeerMessageRes)(nil), "proto.RecvPeerMessageRes")
+	proto1.RegisterType((*RecvPeerMessage)(nil), "proto.RecvPeerMessage")
 	proto1.RegisterType((*PeerPacket)(nil), "proto.PeerPacket")
 }
 func (m *PeerMessage) Marshal() (data []byte, err error) {
@@ -275,7 +275,7 @@ func (m *GetPeerMessageRes) MarshalTo(data []byte) (int, error) {
 	return i, nil
 }
 
-func (m *RecvPeerMessageRes) Marshal() (data []byte, err error) {
+func (m *RecvPeerMessage) Marshal() (data []byte, err error) {
 	size := m.Size()
 	data = make([]byte, size)
 	n, err := m.MarshalTo(data)
@@ -285,7 +285,7 @@ func (m *RecvPeerMessageRes) Marshal() (data []byte, err error) {
 	return data[:n], nil
 }
 
-func (m *RecvPeerMessageRes) MarshalTo(data []byte) (int, error) {
+func (m *RecvPeerMessage) MarshalTo(data []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
@@ -448,7 +448,7 @@ func (m *GetPeerMessageRes) Size() (n int) {
 	return n
 }
 
-func (m *RecvPeerMessageRes) Size() (n int) {
+func (m *RecvPeerMessage) Size() (n int) {
 	var l int
 	_ = l
 	l = len(m.Cid)
@@ -1067,7 +1067,7 @@ func (m *GetPeerMessageRes) Unmarshal(data []byte) error {
 	}
 	return nil
 }
-func (m *RecvPeerMessageRes) Unmarshal(data []byte) error {
+func (m *RecvPeerMessage) Unmarshal(data []byte) error {
 	l := len(data)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1090,10 +1090,10 @@ func (m *RecvPeerMessageRes) Unmarshal(data []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: RecvPeerMessageRes: wiretype end group for non-group")
+			return fmt.Errorf("proto: RecvPeerMessage: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: RecvPeerMessageRes: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: RecvPeerMessage: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

@@ -13,9 +13,9 @@ const (
 	ADDBLACKRES_TYPE
 	DELBLACKREQ_TYPE
 	DELBLACKRES_TYPE
-	GETRELATIONMSGREQ_TYPE
-	GETRELATIONMSGRES_TYPE
-	RECVRELATIONMSGRES_TYPE
+	GETRMSGREQ_TYPE
+	GETRMSGRES_TYPE
+	RECVRMSGRES_TYPE
 )
 
 func UnmarshalAddFriendRes(d []byte) (*AddFriendRes, error) {
@@ -99,7 +99,7 @@ func UnmarshalDelBlackRes(d []byte) (*DelBlackRes, error) {
 	return &res, nil
 }
 
-func UnmarshalRelationpacket(d []byte) (*RelationPacket, error) {
+func UnmarshalRelationPacket(d []byte) (*RelationPacket, error) {
 	var pa RelationPacket
 
 	err := pa.Unmarshal(d)
@@ -108,6 +108,61 @@ func UnmarshalRelationpacket(d []byte) (*RelationPacket, error) {
 	}
 
 	return &pa, nil
+}
+
+func UnmarshalGetRMsgReq(d []byte) (*GetRelationPacketReq, error) {
+	var req GetRelationPacketReq
+
+	err := req.Unmarshal(d)
+	if err != nil {
+		return nil, err
+	}
+
+	return &req, nil
+}
+
+func UnmarshalGetRMsgRes(d []byte) (*GetRelationPacketRes, error) {
+	var res GetRelationPacketRes
+
+	err := res.Unmarshal(d)
+	if err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+func UnmarshalRecvRMsg(d []byte) (*RecvRelationPacket, error) {
+	var res RecvRelationPacket
+
+	err := res.Unmarshal(d)
+	if err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+func MarshalRecvRMsg(cid string, ids []int64) ([]byte, error) {
+	var res RecvRelationPacket
+	res.Cid = cid
+	res.Id = ids
+
+	return res.Marshal()
+}
+
+func MarshalGetRMsgRes(msgs []*RelationPacket) ([]byte, error) {
+	var res GetRelationPacketRes
+	res.Msgs = msgs
+
+	return res.Marshal()
+}
+
+func MarshalGetRMsgReq(cid string) ([]byte, error) {
+	var req GetRelationPacketReq
+	req.Cid = cid
+
+	return req.Marshal()
 }
 
 func MarshalRelationPacket(ty int32, id int64, d []byte) ([]byte, error) {
