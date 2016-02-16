@@ -13,7 +13,7 @@ import (
 const default_count = 5
 
 func InitStorageManager() {
-	golog.Info("initing login storage manager...")
+	golog.Info("initing singlechat storage manager...")
 	g_storage = newStorageManager()
 
 	infos := config.GetConfig().GetSessionDBInfos()
