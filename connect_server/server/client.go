@@ -45,7 +45,7 @@ func (s *Client) run() {
 
 		ser = g_logicmanager.getServer(int(req.ServiceType), s.Token)
 		if ser == nil {
-			golog.Error(aerr.ErrNoLogicSvr)
+			golog.Error(aerr.ErrNoLogicSvr, "type:", req.ServiceType)
 			return
 		}
 
