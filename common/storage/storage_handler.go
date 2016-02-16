@@ -13,7 +13,7 @@ import (
 const login_session_format = "_LOGIN_SESSION"
 const message_id_format = "_MSG_ID"
 const peer_message_format = "_PEER_MSG"
-const relation_message_format = "_SERVER_MSG"
+const relation_message_format = "_RELATION_MSG"
 const friend_list_format = "_FRIEND_LIST"
 const black_list_format = "_BLACK_LIST"
 
