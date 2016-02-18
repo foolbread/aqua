@@ -11,6 +11,8 @@ import (
 	"github.com/foolbread/fbcommon/golog"
 )
 
+const MESSAGES_MAX = 10
+
 type relationServer struct {
 }
 
@@ -18,6 +20,100 @@ func newRelationServer() *relationServer {
 	r := new(relationServer)
 
 	return r
+}
+
+func (s *relationServer) handlerRecvPMsg(con *connectServer, r *aproto.ServiceRequest, pp *aproto.RelationPacket) {
+	req, err := aproto.UnmarshalRecvPMsg(pp.Data)
+	if err != nil {
+		golog.Error(err)
+		return
+	}
+
+	golog.Info("handlerRecvPMsg", "cid:", req.Cid, "msg_id:", req.Id)
+
+	if len(req.Id) == 0 {
+		return
+	}
+
+	hnl := storage.GetStorage().GetRelationHandler(req.Cid)
+
+	if len(req.Id) == 1 {
+		err = hnl.DelRelationMsg(req.Cid, req.Id[0])
+		if err != nil {
+			golog.Error(err)
+			return
+		}
+	} else {
+		err = hnl.DelRelationMsgs(req.Cid, req.Id)
+		if err != nil {
+			golog.Error(err)
+			return
+		}
+	}
+
+}
+
+func (s *relationServer) handlerGetRMsgReq(con *connectServer, r *aproto.ServiceRequest, pp *aproto.RelationPacket) {
+	req, err := aproto.UnmarshalGetRMsgReq(pp.Data)
+	if err != nil {
+		golog.Error(err)
+		return
+	}
+
+	golog.Info("handlerGetRMsgReq", "cid:", req.Cid)
+
+	hnl := storage.GetStorage().GetRelationHandler(req.Cid)
+
+	msgs, err := hnl.GetRelationMsgs(req.Cid)
+	if err != nil {
+		golog.Error(err)
+		return
+	}
+
+	//每10条消息一个包
+	cnt := 0
+	var ms [MESSAGES_MAX]*aproto.RelationPacket
+	for _, v := range msgs {
+		data, err := base64.StdEncoding.DecodeString(v)
+		if err != nil {
+			golog.Error(err)
+			continue
+		}
+
+		rp, err := aproto.UnmarshalRelationPacket(data)
+		if err != nil {
+			golog.Error(err)
+			continue
+		}
+
+		ms[cnt] = rp
+		cnt++
+
+		if cnt >= MESSAGES_MAX {
+			cnt = 0
+			res, err := aproto.MarshalGetRMsgRes(ms[:])
+			if err != nil {
+				golog.Error(err)
+				continue
+			}
+
+			rp := aproto.MarshalRelationPacketEx(aproto.GETRMSGRES_TYPE, 0, res)
+
+			SendMsg(con, req.Cid, r, rp, false)
+		}
+	} //end for
+
+	if cnt > 0 {
+		res, err := aproto.MarshalGetRMsgRes(ms[:cnt])
+		if err != nil {
+			golog.Error(err)
+			return
+		}
+
+		rp := aproto.MarshalRelationPacketEx(aproto.GETRMSGRES_TYPE, 0, res)
+
+		SendMsg(con, req.Cid, r, rp, false)
+	}
 }
 
 func (s *relationServer) handlerDelBlackReq(con *connectServer, r *aproto.ServiceRequest, pp *aproto.RelationPacket) {
@@ -44,9 +140,16 @@ func (s *relationServer) handlerDelBlackReq(con *connectServer, r *aproto.Servic
 		return
 	}
 
-	rp := aproto.MarshalRelationPacketEx(aproto.DELBLACKRES_TYPE, 0, res)
+	from_session := storage.GetStorage().GetSessionHandler(req.From)
+	id, err := from_session.IncreMsgId(req.From)
+	if err != nil {
+		golog.Error(err)
+		return
+	}
 
-	SendMsg(con, req.From, r, rp)
+	rp := aproto.MarshalRelationPacketEx(aproto.DELBLACKRES_TYPE, int64(id), res)
+
+	SendMsg(con, req.From, r, rp, true)
 }
 
 func (s *relationServer) handlerAddBlackReq(con *connectServer, r *aproto.ServiceRequest, pp *aproto.RelationPacket) {
@@ -79,9 +182,16 @@ func (s *relationServer) handlerAddBlackReq(con *connectServer, r *aproto.Servic
 		return
 	}
 
-	rp := aproto.MarshalRelationPacketEx(aproto.ADDBLACKRES_TYPE, 0, res)
+	from_session := storage.GetStorage().GetSessionHandler(req.From)
+	id, err := from_session.IncreMsgId(req.From)
+	if err != nil {
+		golog.Error(err)
+		return
+	}
 
-	SendMsg(con, req.From, r, rp)
+	rp := aproto.MarshalRelationPacketEx(aproto.ADDBLACKRES_TYPE, int64(id), res)
+
+	SendMsg(con, req.From, r, rp, true)
 }
 
 func (s *relationServer) handlerDelFriendReq(con *connectServer, r *aproto.ServiceRequest, pp *aproto.RelationPacket) {
@@ -115,9 +225,16 @@ func (s *relationServer) handlerDelFriendReq(con *connectServer, r *aproto.Servi
 		return
 	}
 
-	rp := aproto.MarshalRelationPacketEx(aproto.DELFRIENDRES_TYPE, 0, res)
+	from_session := storage.GetStorage().GetSessionHandler(req.From)
+	id, err := from_session.IncreMsgId(req.From)
+	if err != nil {
+		golog.Error(err)
+		return
+	}
 
-	SendMsg(con, req.From, r, rp)
+	rp := aproto.MarshalRelationPacketEx(aproto.DELFRIENDRES_TYPE, int64(id), res)
+
+	SendMsg(con, req.From, r, rp, true)
 }
 
 func (s *relationServer) handlerAddFriendRes(con *connectServer, r *aproto.ServiceRequest, pp *aproto.RelationPacket) {
@@ -144,31 +261,15 @@ func (s *relationServer) handlerAddFriendRes(con *connectServer, r *aproto.Servi
 	}
 
 	from_session := storage.GetStorage().GetSessionHandler(res.From)
-	online, err := from_session.IsExistSession(res.From)
+	id, err := from_session.IncreMsgId(res.From)
 	if err != nil {
 		golog.Error(err)
 		return
 	}
 
-	rp := aproto.MarshalRelationPacketEx(aproto.ADDFRIENDRES_TYPE, 0, pp.Data)
-	if online {
-		SendMsg(nil, res.From, r, rp)
-	} else {
-		id, err := from_session.IncreMsgId(res.From)
-		if err != nil {
-			golog.Error(err)
-			return
-		}
+	rp := aproto.MarshalRelationPacketEx(aproto.ADDFRIENDRES_TYPE, int64(id), pp.Data)
 
-		rp.Id = int64(id)
-		msg, err := rp.Marshal()
-		if err != nil {
-			golog.Error(err)
-		}
-
-		from_relation.AddRelationMsg(res.From, base64.StdEncoding.EncodeToString(msg), id)
-	}
-
+	SendMsg(nil, res.From, r, rp, true)
 }
 
 func (s *relationServer) handlerAddFriendReq(con *connectServer, r *aproto.ServiceRequest, pp *aproto.RelationPacket) {
@@ -181,8 +282,6 @@ func (s *relationServer) handlerAddFriendReq(con *connectServer, r *aproto.Servi
 	golog.Info("handlerAddFriendReq", "from:", req.From, "friend:", req.Friend)
 
 	from_relation := storage.GetStorage().GetRelationHandler(req.From)
-	friend_relation := storage.GetStorage().GetRelationHandler(req.Friend)
-
 	exist, err := from_relation.IsExistFriend(req.From, req.Friend)
 	if err != nil {
 		golog.Error(err)
@@ -194,58 +293,14 @@ func (s *relationServer) handlerAddFriendReq(con *connectServer, r *aproto.Servi
 	}
 
 	friend_session := storage.GetStorage().GetSessionHandler(req.Friend)
-
-	//判断对方是否在线
-	online, err := friend_session.IsExistSession(req.Friend)
-	if err != nil {
-		golog.Error(err)
-		return
-	}
-
-	if !online {
-		l, err := friend_relation.GetRelationMsgsSize(req.Friend)
-		if err != nil {
-			golog.Error(err)
-			return
-		}
-
-		//对方的关系消息队列已满
-		if l > 50 {
-			res, err := aproto.MarshalAddFriendRes(req.From, req.Friend, aproto.MESSAGE_FULL)
-			if err != nil {
-				golog.Error(err)
-				return
-			}
-
-			rp := aproto.MarshalRelationPacketEx(aproto.ADDFRIENDRES_TYPE, 0, res)
-
-			SendMsg(con, req.From, r, rp)
-			return
-		}
-	}
-
-	//获取消息ID
 	id, err := friend_session.IncreMsgId(req.Friend)
 	if err != nil {
 		golog.Error(err)
 		return
 	}
-
 	pp.Id = int64(id)
 
-	msg, err := pp.Marshal()
-	if err != nil {
-		golog.Error(err)
-		return
-	}
-
-	//添加消息到消息队列
-	friend_session.AddRelationMsg(req.Friend, base64.StdEncoding.EncodeToString(msg), id)
-
-	if online {
-		//直接发送交友申请
-		SendMsg(nil, req.Friend, r, pp)
-	}
+	SendMsg(nil, req.Friend, r, pp, true)
 
 	//给予等待回复
 	res, err := aproto.MarshalAddFriendRes(req.From, req.Friend, aproto.WAITTING_RESPONSE)
@@ -254,7 +309,14 @@ func (s *relationServer) handlerAddFriendReq(con *connectServer, r *aproto.Servi
 		return
 	}
 
-	rp := aproto.MarshalRelationPacketEx(aproto.ADDFRIENDRES_TYPE, pp.Id, res)
+	from_session := storage.GetStorage().GetSessionHandler(req.From)
+	id, err = from_session.IncreMsgId(req.From)
+	if err != nil {
+		golog.Error(err)
+		return
+	}
 
-	SendMsg(con, req.From, r, rp)
+	rp := aproto.MarshalRelationPacketEx(aproto.ADDFRIENDRES_TYPE, int64(id), res)
+
+	SendMsg(con, req.From, r, rp, true)
 }

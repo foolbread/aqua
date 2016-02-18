@@ -6,7 +6,7 @@ package server
 import (
 	anet "aqua/common/net"
 	aproto "aqua/common/proto"
-	"aqua/singlechat_server/config"
+	"aqua/relation_server/config"
 	"net"
 	"time"
 
@@ -119,7 +119,7 @@ func (s *connectServer) SendToCon(d []byte) error {
 }
 
 func (s *connectServer) handlerRelationCmd(req *aproto.ServiceRequest) {
-	pg, err := aproto.UnmarshalRelationpacket(req.Payload)
+	pg, err := aproto.UnmarshalRelationPacket(req.Payload)
 	if err != nil {
 		golog.Error(err)
 		return
@@ -136,6 +136,9 @@ func (s *connectServer) handlerRelationCmd(req *aproto.ServiceRequest) {
 		g_relation.handlerAddBlackReq(s, req, pg)
 	case aproto.DELBLACKREQ_TYPE:
 		g_relation.handlerDelBlackReq(s, req, pg)
-	case aproto.GETRELATIONMSGREQ_TYPE:
+	case aproto.GETRMSGREQ_TYPE:
+		g_relation.handlerGetRMsgReq(s, req, pg)
+	case aproto.RECVRMSGRES_TYPE:
+		g_relation.handlerRecvPMsg(s, req, pg)
 	}
 }

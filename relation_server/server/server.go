@@ -8,6 +8,8 @@ import (
 
 	"github.com/foolbread/fbcommon/golog"
 
+	"aqua/relation_server/config"
+
 	fbtime "github.com/foolbread/fbcommon/time"
 )
 
@@ -15,6 +17,11 @@ func InitServer() {
 	golog.Info("initing relation server......")
 	g_conmanager = newConnectManager()
 	g_relation = newRelationServer()
+
+	csvr := config.GetConfig().GetConnetServer()
+	for _, v := range csvr {
+		newConnectServer(v)
+	}
 
 	go logic_timer.Start()
 }
