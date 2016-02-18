@@ -13,6 +13,7 @@ import (
 const relation_message_format = "_RELATION_MSG"
 const friend_list_format = "_FRIEND_LIST"
 const black_list_format = "_BLACK_LIST"
+const relation_msg_id_format = "_RELATION_MSG_ID"
 
 type RelationHandler struct {
 	handler *RedisHandler
@@ -103,4 +104,11 @@ func (s *RelationHandler) IsExistFriend(cid string, friend string) (bool, error)
 	set := cid + friend_list_format
 
 	return s.handler.SismemberSet(set, friend)
+}
+
+///////////////////////////////////////////////////////////////////////
+func (s *RelationHandler) IncreRelationMsgId(cid string) (int, error) {
+	key := cid + relation_msg_id_format
+
+	return s.handler.IncreKey(key)
 }

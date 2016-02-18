@@ -123,9 +123,8 @@ func (s *singlechatServer) handlerSendPMsgReq(con *connectServer, r *aproto.Serv
 	golog.Info("handlerSendMsgReq", "from:", req.Msg.From, "to:", req.Msg.To)
 
 	//send to
-	to_session := storage.GetStorage().GetSessionHandler(req.Msg.To)
-
-	id, err := to_session.IncreMsgId(req.Msg.To)
+	to_single := storage.GetStorage().GetSingleHandler(req.Msg.To)
+	id, err := to_single.IncrePeerMsgId(req.Msg.To)
 	if err != nil {
 		golog.Error(err)
 		return
@@ -135,9 +134,8 @@ func (s *singlechatServer) handlerSendPMsgReq(con *connectServer, r *aproto.Serv
 	SendMsg(nil, req.Msg.To, r, pp, true)
 
 	//send from
-	from_session := storage.GetStorage().GetSessionHandler(req.Msg.From)
-
-	id, err = from_session.IncreMsgId(req.Msg.From)
+	from_single := storage.GetStorage().GetSingleHandler(req.Msg.From)
+	id, err = from_single.IncrePeerMsgId(req.Msg.From)
 	if err != nil {
 		golog.Error(err)
 		return

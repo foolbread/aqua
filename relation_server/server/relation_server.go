@@ -140,8 +140,7 @@ func (s *relationServer) handlerDelBlackReq(con *connectServer, r *aproto.Servic
 		return
 	}
 
-	from_session := storage.GetStorage().GetSessionHandler(req.From)
-	id, err := from_session.IncreMsgId(req.From)
+	id, err := from_relation.IncreRelationMsgId(req.From)
 	if err != nil {
 		golog.Error(err)
 		return
@@ -182,8 +181,7 @@ func (s *relationServer) handlerAddBlackReq(con *connectServer, r *aproto.Servic
 		return
 	}
 
-	from_session := storage.GetStorage().GetSessionHandler(req.From)
-	id, err := from_session.IncreMsgId(req.From)
+	id, err := from_relation.IncreRelationMsgId(req.From)
 	if err != nil {
 		golog.Error(err)
 		return
@@ -225,8 +223,7 @@ func (s *relationServer) handlerDelFriendReq(con *connectServer, r *aproto.Servi
 		return
 	}
 
-	from_session := storage.GetStorage().GetSessionHandler(req.From)
-	id, err := from_session.IncreMsgId(req.From)
+	id, err := from_relation.IncreRelationMsgId(req.From)
 	if err != nil {
 		golog.Error(err)
 		return
@@ -260,8 +257,7 @@ func (s *relationServer) handlerAddFriendRes(con *connectServer, r *aproto.Servi
 		}
 	}
 
-	from_session := storage.GetStorage().GetSessionHandler(res.From)
-	id, err := from_session.IncreMsgId(res.From)
+	id, err := from_relation.IncreRelationMsgId(res.From)
 	if err != nil {
 		golog.Error(err)
 		return
@@ -292,8 +288,8 @@ func (s *relationServer) handlerAddFriendReq(con *connectServer, r *aproto.Servi
 		return
 	}
 
-	friend_session := storage.GetStorage().GetSessionHandler(req.Friend)
-	id, err := friend_session.IncreMsgId(req.Friend)
+	friend_relation := storage.GetStorage().GetRelationHandler(req.Friend)
+	id, err := friend_relation.IncreRelationMsgId(req.Friend)
 	if err != nil {
 		golog.Error(err)
 		return
@@ -309,8 +305,7 @@ func (s *relationServer) handlerAddFriendReq(con *connectServer, r *aproto.Servi
 		return
 	}
 
-	from_session := storage.GetStorage().GetSessionHandler(req.From)
-	id, err = from_session.IncreMsgId(req.From)
+	id, err = from_relation.IncreRelationMsgId(req.From)
 	if err != nil {
 		golog.Error(err)
 		return

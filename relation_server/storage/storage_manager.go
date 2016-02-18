@@ -19,7 +19,7 @@ func InitStorageManager() {
 	infos := config.GetConfig().GetSessionDBInfos()
 	for k, v := range infos {
 		for i := 0; i < default_count; i++ {
-			hnl := astorage.NewStorageHandler(v)
+			hnl := astorage.NewSessionHandler(v)
 			if hnl != nil {
 				g_storage.session_storages[k] = append(g_storage.session_storages[k], hnl)
 			}
@@ -29,7 +29,7 @@ func InitStorageManager() {
 	infos = config.GetConfig().GetRelationDBInfos()
 	for k, v := range infos {
 		for i := 0; i < default_count; i++ {
-			hnl := astorage.NewStorageHandler(v)
+			hnl := astorage.NewRelationHandler(v)
 			if hnl != nil {
 				g_storage.relation_storages[k] = append(g_storage.relation_storages[k], hnl)
 			}
@@ -44,25 +44,25 @@ func GetStorage() *storageManager {
 var g_storage *storageManager
 
 type storageManager struct {
-	session_storages  [][]*astorage.StorageHandler
-	relation_storages [][]*astorage.StorageHandler
+	session_storages  [][]*astorage.SessionHandler
+	relation_storages [][]*astorage.RelationHandler
 }
 
 func newStorageManager() *storageManager {
 	ret := new(storageManager)
-	ret.session_storages = make([][]*astorage.StorageHandler, len(config.GetConfig().GetSessionDBInfos()))
-	ret.relation_storages = make([][]*astorage.StorageHandler, len(config.GetConfig().GetRelationDBInfos()))
+	ret.session_storages = make([][]*astorage.SessionHandler, len(config.GetConfig().GetSessionDBInfos()))
+	ret.relation_storages = make([][]*astorage.RelationHandler, len(config.GetConfig().GetRelationDBInfos()))
 
 	return ret
 }
 
-func (s *storageManager) GetSessionHandler(cid string) *astorage.StorageHandler {
+func (s *storageManager) GetSessionHandler(cid string) *astorage.SessionHandler {
 	by := astorage.Md5ToByte(cid)
 	as := s.session_storages[int(by)%len(s.session_storages)]
 	return as[int(by)%len(as)]
 }
 
-func (s *storageManager) GetRelationHandler(cid string) *astorage.StorageHandler {
+func (s *storageManager) GetRelationHandler(cid string) *astorage.RelationHandler {
 	by := astorage.Md5ToByte(cid)
 	as := s.relation_storages[int(by)%len(s.relation_storages)]
 	return as[int(by)%len(as)]

@@ -11,6 +11,7 @@ import (
 )
 
 const peer_message_format = "_PEER_MSG"
+const peer_msg_id_format = "_PEER_MSG_ID"
 
 type SingleChatHandler struct {
 	handler *RedisHandler
@@ -64,4 +65,11 @@ func (s *SingleChatHandler) GetPeerMsgsSize(cid string) (int, error) {
 	key := cid + peer_message_format
 
 	return s.handler.GetHashLen(key)
+}
+
+///////////////////////////////////////////////////////////////////////
+func (s *SingleChatHandler) IncrePeerMsgId(cid string) (int, error) {
+	key := cid + peer_msg_id_format
+
+	return s.handler.IncreKey(key)
 }

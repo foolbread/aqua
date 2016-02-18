@@ -10,8 +10,6 @@ import (
 )
 
 const login_session_format = "_LOGIN_SESSION"
-const peer_msg_id_format = "_PEER_MSG_ID"
-const relation_msg_id_format = "_RELATION_MSG_ID"
 
 type SessionHandler struct {
 	handler *RedisHandler
@@ -59,14 +57,3 @@ func (s *SessionHandler) IsExistSession(cid string) (bool, error) {
 }
 
 ///////////////////////////////////////////////////////////////////////
-func (s *SessionHandler) IncrePeerMsgId(cid string) (int, error) {
-	key := cid + peer_msg_id_format
-
-	return s.handler.IncreKey(key)
-}
-
-func (s *SessionHandler) IncreRelationMsgId(cid string) (int, error) {
-	key := cid + relation_msg_id_format
-
-	return s.handler.IncreKey(key)
-}

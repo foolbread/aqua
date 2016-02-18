@@ -79,7 +79,7 @@ func SendMsg(con *connectServer, cid string, r *aproto.ServiceRequest, rp *aprot
 	}
 
 	if b {
-		hnl := storage.GetStorage().GetSessionHandler(cid)
+		hnl := storage.GetStorage().GetRelationHandler(cid)
 		err = hnl.AddRelationMsg(cid, base64.StdEncoding.EncodeToString(data), int(rp.Id))
 		if err != nil {
 			golog.Error(err)

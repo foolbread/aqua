@@ -19,7 +19,7 @@ func InitStorageManager() {
 	infos := config.GetConfig().GetSessionDBInfos()
 	for k, v := range infos {
 		for i := 0; i < default_count; i++ {
-			hnl := astorage.NewStorageHandler(v)
+			hnl := astorage.NewSessionHandler(v)
 			if hnl != nil {
 				g_storage.session_storages[k] = append(g_storage.session_storages[k], hnl)
 			}
@@ -29,7 +29,7 @@ func InitStorageManager() {
 	infos = config.GetConfig().GetSinglechatDBInfos()
 	for k, v := range infos {
 		for i := 0; i < default_count; i++ {
-			hnl := astorage.NewStorageHandler(v)
+			hnl := astorage.NewSingleChatHandler(v)
 			if hnl != nil {
 				g_storage.singlechat_storages[k] = append(g_storage.singlechat_storages[k], hnl)
 			}
@@ -44,25 +44,25 @@ func GetStorage() *storageManager {
 var g_storage *storageManager
 
 type storageManager struct {
-	session_storages    [][]*astorage.StorageHandler
-	singlechat_storages [][]*astorage.StorageHandler
+	session_storages    [][]*astorage.SessionHandler
+	singlechat_storages [][]*astorage.SingleChatHandler
 }
 
 func newStorageManager() *storageManager {
 	ret := new(storageManager)
-	ret.session_storages = make([][]*astorage.StorageHandler, len(config.GetConfig().GetSessionDBInfos()))
-	ret.singlechat_storages = make([][]*astorage.StorageHandler, len(config.GetConfig().GetSinglechatDBInfos()))
+	ret.session_storages = make([][]*astorage.SessionHandler, len(config.GetConfig().GetSessionDBInfos()))
+	ret.singlechat_storages = make([][]*astorage.SingleChatHandler, len(config.GetConfig().GetSinglechatDBInfos()))
 
 	return ret
 }
 
-func (s *storageManager) GetSessionHandler(cid string) *astorage.StorageHandler {
+func (s *storageManager) GetSessionHandler(cid string) *astorage.SessionHandler {
 	by := astorage.Md5ToByte(cid)
 	as := s.session_storages[int(by)%len(s.session_storages)]
 	return as[int(by)%len(as)]
 }
 
-func (s *storageManager) GetSingleHandler(cid string) *astorage.StorageHandler {
+func (s *storageManager) GetSingleHandler(cid string) *astorage.SingleChatHandler {
 	by := astorage.Md5ToByte(cid)
 	as := s.singlechat_storages[int(by)%len(s.singlechat_storages)]
 	return as[int(by)%len(as)]
